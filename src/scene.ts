@@ -6,17 +6,9 @@ export type Keyframed<TValue> = TValue
         readonly value: TValue
     }
 
-export type Color = {
-    readonly r: number,
-    readonly g: number,
-    readonly b: number,
-};
+export type Color = readonly [number, number, number];
 
-export type Vector = {
-    readonly x: number,
-    readonly y: number,
-    readonly z: number
-};
+export type Vector = readonly [number, number, number];
 
 export type Polygon = readonly Vector[];
 
@@ -36,6 +28,8 @@ export type PointLight = {
 }
 
 export type Light = DirectionalLight | PointLight | AmbientLight;
+
+export type CameraProjectionKind = "orthographic" | "perspective";
 
 export type OrthographicCameraProjection = {
     readonly scale: number,

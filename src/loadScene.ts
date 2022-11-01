@@ -1,23 +1,6 @@
-import "@extendscript/aes.patch.array.indexof";
-import "@extendscript/aes.patch.array.isarray";
-import "@extendscript/aes.patch.array.map";
-import "json-js/json2.js";
 import parseColor from "parse-color";
+import "./polyfills";
 import { Camera, CameraProjection, CameraView, Color, FitMode, Keyframed, Light, Polygon, Scene, Vector } from "./scene";
-
-declare const JSON: {
-    parse: (json: string) => object
-};
-
-declare global {
-    interface ArrayConstructor {
-        isArray(obj: unknown): boolean,
-    }
-    interface Array<T> {
-        indexOf(val: T): number;
-        map<T2>(map: (t: T) => T2): Array<T2>;
-    }
-};
 
 function loadFile(): object | null {
     const file = File.openDialog("Load a scene", "JSON files:*.json,All files:*.*", false);
@@ -111,14 +94,7 @@ function coerceColor(value: unknown | undefined, defaultValue: Color | undefined
     else {
         throw new Error("Expected a color array, object or hex string.");
     }
-    for (const component of arrayColor) {
-        coerceNumber(component, undefined, 0, 1);
-    }
-    return {
-        r: coerceNumber(arrayColor[0], undefined, 0, 1),
-        g: coerceNumber(arrayColor[1], undefined, 0, 1),
-        b: coerceNumber(arrayColor[2], undefined, 0, 1)
-    }
+    return arrayColor.map(c => coerceNumber(c, undefined, 0, 1)) as Color;
 }
 
 function coerceVector(value: unknown | undefined, defaultValue: Vector | undefined = undefined): Vector {
@@ -142,11 +118,7 @@ function coerceVector(value: unknown | undefined, defaultValue: Vector | undefin
     else {
         throw new Error("Expected a vector array or object.");
     }
-    return {
-        x: coerceNumber(arrayVector[0]),
-        y: coerceNumber(arrayVector[1]),
-        z: coerceNumber(arrayVector[2])
-    }
+    return arrayVector.map(coerceNumber) as Vector;
 }
 
 function coerceBoolean(value: unknown | undefined, defaultValue: boolean | undefined = undefined): boolean {
@@ -344,12 +316,12 @@ function coerceScene(value: unknown | undefined, defaultValue: Scene | undefined
     coerceObject(value, undefined, ["fillColor", "strokeColor", "strokeWidth", "lights", "camera", "fit", "polygons", "cullOccluded", "cullBackFaces", "name", "anchorPoint"], ["camera", "polygons"]);
     const obj = value as any;
     const scene: Scene = {
-        anchorPoint: coerceKeyframed<Vector>(obj.anchorPoint, coerceVector, { x: 0, y: 0, z: 0 }),
+        anchorPoint: coerceKeyframed<Vector>(obj.anchorPoint, coerceVector, [0, 0, 0]),
         camera: coerceKeyframed<Camera>(obj.camera, coerceCamera),
         cullBackFaces: coerceBoolean(obj.cullBackFaces, true),
         cullOccluded: coerceBoolean(obj.cullOccluded, true),
-        fillColor: coerceKeyframed(obj.fillColor, coerceColor, { r: 1, g: 1, b: 1 }),
-        strokeColor: coerceKeyframed(obj.fillColor, coerceColor, { r: 0, g: 0, b: 0 }),
+        fillColor: coerceKeyframed(obj.fillColor, coerceColor, [1, 1, 1]),
+        strokeColor: coerceKeyframed(obj.fillColor, coerceColor, [0, 0, 0]),
         strokeWidth: coerceNumber(obj.strokeWidth, 10, 0, 65535),
         fit: coerceEnum<FitMode>(obj.fit, ["width", "height", "max", "min"], "min"),
         lights: coerceArray(obj.lights, [{ color: { r: 0.8, g: 0.8, b: 0.8 } }]).map(l => coerceKeyframed<Light>(l, coerceLight)),

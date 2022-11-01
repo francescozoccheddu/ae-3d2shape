@@ -1,5 +1,6 @@
 import loadScene from "./loadScene";
 import { Scene } from "./scene";
+import "./vec";
 
 function main(): void {
     const scene: Scene | null = loadScene();
