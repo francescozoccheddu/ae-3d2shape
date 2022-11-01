@@ -1,0 +1,102 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-mesh2shape/schemas/camera.json",
+    "$defs": {
+        "view": {
+            "type": "object",
+            "properties": {
+                "up": {
+                    "$ref": "vector.json"
+                },
+                "forward": {
+                    "$ref": "vector.json"
+                },
+                "eye": {
+                    "$ref": "vector.json"
+                }
+            },
+            "required": [
+                "up",
+                "forward",
+                "eye"
+            ],
+            "additionalProperties": false
+        },
+        "orthographic-projection": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "const": "orthographic"
+                },
+                "scale": {
+                    "type": "number",
+                    "minimum": 0
+                }
+            },
+            "required": [
+                "kind"
+            ],
+            "additionalProperties": false
+        },
+        "projection-fov-angle": {
+            "type": "number",
+            "minimum": 1,
+            "maximum": 179,
+            "default": 60
+        },
+        "perspective-projection": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "const": "perspective"
+                },
+                "verticalFov": {
+                    "$ref": "#/$defs/projection-fov-angle"
+                },
+                "horizontalFov": {
+                    "$ref": "#/$defs/projection-fov-angle"
+                }
+            },
+            "allOf": [
+                {
+                    "required": [
+                        "kind"
+                    ]
+                },
+                {
+                    "not": {
+                        "required": [
+                            "verticalFov",
+                            "horizontalFov"
+                        ]
+                    }
+                }
+            ],
+            "additionalProperties": false
+        },
+        "projection": {
+            "oneOf": [
+                {
+                    "$ref": "#/$defs/orthographic-projection"
+                },
+                {
+                    "$ref": "#/$defs/perspective-projection"
+                }
+            ]
+        }
+    },
+    "type": "object",
+    "properties": {
+        "view": {
+            "$ref": "#/$defs/view"
+        },
+        "projection": {
+            "$ref": "#/$defs/projection"
+        }
+    },
+    "required": [
+        "view",
+        "projection"
+    ],
+    "additionalProperties": false
+}

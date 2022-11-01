@@ -1,0 +1,64 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-mesh2shape/schemas/scene.json",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^[\\\\A-Z-a-z0-9]*$"
+        },
+        "fillColor": {
+            "$ref": "color-property.json",
+            "default": "#FFF"
+        },
+        "strokeColor": {
+            "$ref": "color-property.json",
+            "default": "#000"
+        },
+        "strokeWidth": {
+            "$ref": "stroke-width-property.json",
+            "default": 10
+        },
+        "polygons": {
+            "type": "array",
+            "items": {
+                "$ref": "polygon-property.json"
+            }
+        },
+        "lights": {
+            "type": "array",
+            "items": {
+                "$ref": "light-property.json"
+            }
+        },
+        "camera": {
+            "$ref": "camera-property.json"
+        },
+        "fit": {
+            "enum": [
+                "width",
+                "height",
+                "min",
+                "max"
+            ]
+        },
+        "anchorPoint": {
+            "$ref": "vector-property.json"
+        },
+        "cullOccluded": {
+            "type": "boolean",
+            "default": true
+        },
+        "cullBackFaces": {
+            "type": "boolean",
+            "default": true
+        }
+    },
+    "required": [
+        "polygons",
+        "camera"
+    ],
+    "additionalProperties": false
+}

@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "module": "CommonJS",
+        "noLib": true,
+        "target": "ES3",
+        "types": [
+            "types-for-adobe/AfterEffects/18.0"
+        ],
+        "allowJs": false
+    }
+}

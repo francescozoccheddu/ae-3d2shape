@@ -1,0 +1,69 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-mesh2shape/schemas/color.json",
+    "$defs": {
+        "hex": {
+            "type": "string",
+            "pattern": "^#?(([0-9a-fA-F]{1,2}){3})$"
+        },
+        "rgb-component": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 1
+        },
+        "rgb-object": {
+            "type": "object",
+            "properties": {
+                "r": {
+                    "$ref": "#/$defs/rgb-component"
+                },
+                "g": {
+                    "$ref": "#/$defs/rgb-component"
+                },
+                "b": {
+                    "$ref": "#/$defs/rgb-component"
+                }
+            },
+            "required": [
+                "r",
+                "g",
+                "b"
+            ],
+            "additionalProperties": false
+        },
+        "rgb-array": {
+            "type": "array",
+            "items": {
+                "$ref": "#/$defs/rgb-component"
+            },
+            "minItems": 3,
+            "maxItems": 3
+        },
+        "known": {
+            "enum": [
+                "white",
+                "black",
+                "blue",
+                "red",
+                "green",
+                "yellow",
+                "cyan",
+                "magenta"
+            ]
+        }
+    },
+    "anyOf": [
+        {
+            "$ref": "#/$defs/hex"
+        },
+        {
+            "$ref": "#/$defs/rgb-object"
+        },
+        {
+            "$ref": "#/$defs/rgb-array"
+        },
+        {
+            "$ref": "#/$defs/known"
+        }
+    ]
+}

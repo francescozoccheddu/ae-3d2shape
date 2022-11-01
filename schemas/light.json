@@ -1,0 +1,51 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-mesh2shape/schemas/light.json",
+    "$defs": {
+        "directional": {
+            "type": "object",
+            "properties": {
+                "direction": {
+                    "$ref": "vector.json"
+                },
+                "color": {
+                    "$ref": "color.json"
+                }
+            },
+            "required": [
+                "direction",
+                "color"
+            ],
+            "additionalProperties": false
+        },
+        "point": {
+            "type": "object",
+            "properties": {
+                "point": {
+                    "$ref": "vector.json"
+                },
+                "radius": {
+                    "type": "number",
+                    "minimum": 0
+                },
+                "color": {
+                    "$ref": "color.json"
+                }
+            },
+            "required": [
+                "point",
+                "radius",
+                "color"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "oneOf": [
+        {
+            "$ref": "#/$defs/directional"
+        },
+        {
+            "$ref": "#/$defs/point"
+        }
+    ]
+}
