@@ -1,7 +1,9 @@
 # build
 /node_modules/
-/validator/validator.js
 /*.jsx
 
 # ide
 .vscode/
+
+# test
+/test.json

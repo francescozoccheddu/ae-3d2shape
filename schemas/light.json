@@ -1,7 +1,12 @@
 {
     "$schema": "http://json-schema.org/draft-07/schema",
-    "$id": "https://github.com/francescozoccheddu/ae-mesh2shape/schemas/light.json",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schemas/light.json",
     "$defs": {
+        "ambient": {
+            "color": {
+                "$ref": "color.json"
+            }
+        },
         "directional": {
             "type": "object",
             "properties": {
@@ -46,6 +51,9 @@
         },
         {
             "$ref": "#/$defs/point"
+        },
+        {
+            "$ref": "#/$defs/ambient"
         }
     ]
 }

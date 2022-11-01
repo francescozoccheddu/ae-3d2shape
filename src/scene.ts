@@ -1,34 +1,28 @@
 export type Time = number;
 
-export type Property<TValue> = TValue
+export type Keyframed<TValue> = TValue
     | {
         readonly time: Time,
         readonly value: TValue
     }
 
-export type HexColor = string;
-
-export type ArrayRgbColor = readonly [number, number, number];
-
-export type ObjectRgbColor = {
+export type Color = {
     readonly r: number,
     readonly g: number,
     readonly b: number,
 };
 
-export type Color = HexColor | ArrayRgbColor | ObjectRgbColor;
-
-export type ArrayVector = readonly [number, number, number];
-
-export type ObjectVector = {
+export type Vector = {
     readonly x: number,
     readonly y: number,
     readonly z: number
 };
 
-export type Vector = ArrayVector | ObjectVector;
+export type Polygon = readonly Vector[];
 
-export type Polygon = readonly [Vector];
+export type AmbientLight = {
+    readonly color: Color
+};
 
 export type DirectionalLight = {
     readonly direction: Vector,
@@ -41,10 +35,10 @@ export type PointLight = {
     readonly color: Color
 }
 
-export type Light = DirectionalLight | PointLight;
+export type Light = DirectionalLight | PointLight | AmbientLight;
 
 export type OrthographicCameraProjection = {
-    readonly scale?: number,
+    readonly scale: number,
     readonly kind: "orthographic"
 };
 
@@ -72,15 +66,15 @@ export type Camera = {
 export type FitMode = "width" | "height" | "min" | "max";
 
 export type Scene = {
-    readonly fillColor: Property<Color>,
-    readonly strokeColor: Property<Color>,
-    readonly strokeWidth: Property<number>,
-    readonly camera: Property<Camera>,
-    readonly lights: readonly [Property<Light>],
-    readonly polygons: readonly [Property<Polygon>],
+    readonly fillColor: Keyframed<Color>,
+    readonly strokeColor: Keyframed<Color>,
+    readonly strokeWidth: Keyframed<number>,
+    readonly camera: Keyframed<Camera>,
+    readonly lights: readonly Keyframed<Light>[],
+    readonly polygons: readonly Keyframed<Polygon>[],
     readonly name: string,
     readonly cullOccluded: boolean,
     readonly cullBackFaces: boolean,
-    readonly anchorPoint: Property<Vector>,
+    readonly anchorPoint: Keyframed<Vector>,
     readonly fit: FitMode
 };

@@ -5,7 +5,6 @@ import path from "path";
 import yargs from 'yargs';
 import { hideBin } from 'yargs/helpers';
 import buildSource from "./buildSource";
-import buildValidator from "./buildValidator";
 
 function coerceOutFile(file: string): string {
     if (!isValidPath(file)) {
@@ -43,12 +42,10 @@ export default async function main(): Promise<number> {
         .parse();
 
     const spinner = (await import('ora')).default();
-    spinner.start("Building validator...");
+    spinner.start("Building source...");
     try {
-        await buildValidator(args.d);
-        spinner.start("Building source...");
         await buildSource(args.o, args.d);
-        spinner.succeed(`Succesfully built "${args.o}"`);
+        spinner.succeed(`Successfully built "${args.o}"`);
     }
     catch (e) {
         spinner.fail("Failed.");
