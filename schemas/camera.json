@@ -30,7 +30,8 @@
                 },
                 "scale": {
                     "type": "number",
-                    "minimum": 0
+                    "minimum": 0,
+                    "default": 1
                 }
             },
             "required": [

@@ -21,12 +21,16 @@
                     "$ref": "vector.json"
                 },
                 "color": {
-                    "$ref": "color.json"
+                    "$ref": "color.json",
+                    "default": [
+                        1,
+                        1,
+                        1
+                    ]
                 }
             },
             "required": [
-                "direction",
-                "color"
+                "direction"
             ],
             "additionalProperties": false
         },
@@ -41,13 +45,17 @@
                     "minimum": 0
                 },
                 "color": {
-                    "$ref": "color.json"
+                    "$ref": "color.json",
+                    "default": [
+                        1,
+                        1,
+                        1
+                    ]
                 }
             },
             "required": [
                 "point",
-                "radius",
-                "color"
+                "radius"
             ],
             "additionalProperties": false
         }

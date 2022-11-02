@@ -12,6 +12,6 @@ declare global {
     }
     interface Array<T> {
         indexOf(val: T): number;
-        map<T2>(map: (t: T) => T2): Array<T2>;
+        map<T2>(map: (t: T, i: number) => T2): Array<T2>;
     }
 };

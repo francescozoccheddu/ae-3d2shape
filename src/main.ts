@@ -4,7 +4,7 @@ import { Scene } from "./scene";
 import "./vec";
 
 function main(): void {
-    const scene: Scene | null = doing("parsing scene file", loadScene);
+    const scene: Scene | null = doing("loading scene file", loadScene);
     if (scene === null) {
         return;
     }

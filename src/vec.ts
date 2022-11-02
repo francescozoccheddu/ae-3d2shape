@@ -226,6 +226,10 @@ export function neg<TDim extends Dim>(v: Readonly<Vec<TDim>>): Vec<TDim> {
     return map(v, c => -c);
 }
 
+export function norm<TDim extends Dim>(v: Readonly<Vec<TDim>>): Vec<TDim> {
+    return div<TDim>(v, len(v));
+}
+
 export function abs<TDim extends Dim>(v: Readonly<Vec<TDim>>): Vec<TDim> {
     return map(v, c => Math.abs(c));
 }
