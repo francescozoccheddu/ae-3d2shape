@@ -3,9 +3,16 @@
     "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schemas/light.json",
     "$defs": {
         "ambient": {
-            "color": {
-                "$ref": "color.json"
-            }
+            "type": "object",
+            "properties": {
+                "color": {
+                    "$ref": "color.json"
+                }
+            },
+            "required": [
+                "color"
+            ],
+            "additionalProperties": false
         },
         "directional": {
             "type": "object",

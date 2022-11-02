@@ -44,6 +44,9 @@
                 "max"
             ]
         },
+        "size": {
+            "$ref": "size.json"
+        },
         "anchorPoint": {
             "$ref": "vector-property.json"
         },
@@ -58,7 +61,8 @@
     },
     "required": [
         "polygons",
-        "camera"
+        "camera",
+        "size"
     ],
     "additionalProperties": false
 }

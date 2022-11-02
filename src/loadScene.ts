@@ -1,6 +1,7 @@
 import parseColor from "parse-color";
+import doing from "./doing";
 import "./polyfills";
-import { Camera, CameraProjection, CameraView, Color, FitMode, Keyframed, Light, Polygon, Scene, Vector } from "./scene";
+import { Camera, CameraProjection, CameraView, Color, FitMode, Keyframe, Keyframed, Light, Polygon, Scene, Size, Vector } from "./scene";
 
 function loadFile(): object | null {
     const file = File.openDialog("Load a scene", "JSON files:*.json,All files:*.*", false);
@@ -23,11 +24,23 @@ function loadFile(): object | null {
 }
 
 function isObject(value: unknown | undefined): boolean {
-    return typeof value === "object" && !Array.isArray(value) && value !== null;
+    return typeof value === "object" && !isArray(value) && value !== null;
 }
 
 function isString(value: unknown | undefined): boolean {
     return typeof value === "string" || value instanceof String;
+}
+
+function isNumber(value: unknown | undefined): boolean {
+    return !isNaN(value as number);
+}
+
+function isArray(value: unknown | undefined): boolean {
+    return Array.isArray(value);
+}
+
+function isBoolean(value: unknown | undefined): boolean {
+    return typeof value === "boolean";
 }
 
 function coerceValue(value: unknown | undefined, defaultValue: unknown | undefined): unknown {
@@ -40,10 +53,10 @@ function coerceValue(value: unknown | undefined, defaultValue: unknown | undefin
     return value;
 }
 
-function coerceObject(value: unknown | undefined, defaultValue: object | undefined = undefined, properties: string[] | "any" = "any", requiredProperties: string[] | "all" = "all"): object {
+function coerceObject(value: unknown | undefined, properties: string[] | "any" = "any", requiredProperties: string[] | "all" = "all", defaultValue: object | undefined = undefined): object {
     value = coerceValue(value, defaultValue);
     if (value === defaultValue) {
-        return value as object;
+        return defaultValue as object;
     }
     if (!isObject(value)) {
         throw new Error("Expected an object.");
@@ -72,10 +85,10 @@ function coerceObject(value: unknown | undefined, defaultValue: object | undefin
 function coerceColor(value: unknown | undefined, defaultValue: Color | undefined = undefined): Color {
     value = coerceValue(value, defaultValue);
     if (value === defaultValue) {
-        return value as Color;
+        return defaultValue as Color;
     }
     let arrayColor: [unknown, unknown, unknown];
-    if (Array.isArray(value)) {
+    if (isArray(value)) {
         const array = value as unknown[];
         if (array.length != 3) {
             throw new Error(`Color array must have size 3, not ${array.length}.`);
@@ -85,25 +98,28 @@ function coerceColor(value: unknown | undefined, defaultValue: Color | undefined
     else if (isString(value)) {
         const hex = value as string;
         arrayColor = parseColor(hex).rgb;
+        if (arrayColor === undefined) {
+            throw new Error(`Invalid hex color string "${hex}".`);
+        }
     }
     else if (isObject(value)) {
-        coerceObject(value, undefined, ["r", "g", "b"]);
+        coerceObject(value, ["r", "g", "b"]);
         const obj = value as Readonly<{ r: unknown, g: unknown, b: unknown }>;
         arrayColor = [obj.r, obj.g, obj.b];
     }
     else {
         throw new Error("Expected a color array, object or hex string.");
     }
-    return arrayColor.map(c => coerceNumber(c, undefined, 0, 1)) as Color;
+    return arrayColor.map(c => coerceNumber(c, 0, 1)) as Color;
 }
 
 function coerceVector(value: unknown | undefined, defaultValue: Vector | undefined = undefined): Vector {
     value = coerceValue(value, defaultValue);
     if (value === defaultValue) {
-        return value as Vector;
+        return defaultValue as Vector;
     }
     let arrayVector: [unknown, unknown, unknown];
-    if (Array.isArray(value)) {
+    if (isArray(value)) {
         const array = value as Array<unknown>;
         if (array.length != 3) {
             throw new Error(`Vector array must have size 3, not ${array.length}.`);
@@ -111,7 +127,7 @@ function coerceVector(value: unknown | undefined, defaultValue: Vector | undefin
         arrayVector = array as [unknown, unknown, unknown];
     }
     else if (isObject(value)) {
-        coerceObject(value, undefined, ["x", "y", "z"]);
+        coerceObject(value, ["x", "y", "z"]);
         const obj = value as Readonly<{ x: unknown, y: unknown, z: unknown }>;
         arrayVector = [obj.x, obj.y, obj.z];
     }
@@ -124,20 +140,20 @@ function coerceVector(value: unknown | undefined, defaultValue: Vector | undefin
 function coerceBoolean(value: unknown | undefined, defaultValue: boolean | undefined = undefined): boolean {
     value = coerceValue(value, defaultValue);
     if (value === defaultValue) {
-        return value as boolean;
+        return defaultValue as boolean;
     }
-    if (typeof value !== "boolean") {
+    if (!isBoolean(value)) {
         throw new Error("Expected a boolean.");
     }
     return value as boolean;
 }
 
-function coerceNumber(value: unknown | undefined, defaultValue: number | undefined = undefined, min: number = -Infinity, max: number = Infinity): number {
+function coerceNumber(value: unknown | undefined, min: number = -Infinity, max: number = Infinity, defaultValue: number | undefined = undefined): number {
     value = coerceValue(value, defaultValue);
     if (value === defaultValue) {
-        return value as number;
+        return defaultValue as number;
     }
-    if (isNaN(value as number)) {
+    if (!isNumber(value)) {
         throw new Error("Expected a number.");
     }
     const num = value as number;
@@ -150,12 +166,12 @@ function coerceNumber(value: unknown | undefined, defaultValue: number | undefin
     return num;
 }
 
-function coerceArray(value: unknown | undefined, defaultValue: unknown[] | undefined = undefined, minLength: number = -Infinity, maxLength: number = Infinity): unknown[] {
+function coerceArray(value: unknown | undefined, minLength: number = 0, maxLength: number = Infinity, defaultValue: unknown[] | undefined = undefined): unknown[] {
     value = coerceValue(value, defaultValue);
     if (value === defaultValue) {
-        return value as unknown[];
+        return defaultValue as unknown[];
     }
-    if (!Array.isArray(value)) {
+    if (!isArray(value)) {
         throw new Error("Expected an array.");
     }
     const array = value as unknown[];
@@ -166,71 +182,68 @@ function coerceArray(value: unknown | undefined, defaultValue: unknown[] | undef
 }
 
 function coerceLight(value: unknown | undefined, defaultValue: Light | undefined = undefined): Light {
-    value = coerceValue(value, defaultValue);
-    if (value === defaultValue) {
-        return value as Light;
+    const obj = coerceObject(value, ["direction", "color", "point"], [], undefined) as any;
+    if (obj === defaultValue) {
+        return defaultValue as Light;
     }
-    coerceObject(value, undefined, ["direction", "color", "point"], []);
-    if ("direction" in (value as object)) {
-        coerceObject(value, undefined, ["direction", "color"]);
-        const obj = value as Readonly<{ direction: unknown, color: unknown }>;
+    if ("direction" in obj) {
+        coerceObject(obj, ["direction", "color"]);
         return {
             color: coerceColor(obj.color),
-            direction: coerceVector(obj.direction)
+            direction: coerceVector(obj.direction),
+            kind: "directional"
         };
     }
-    else if ("point" in (value as object)) {
-        coerceObject(value, undefined, ["point", "radius", "color"]);
-        const obj = value as Readonly<{ point: unknown, radius: unknown, color: unknown }>;
+    else if ("point" in obj) {
+        coerceObject(value, ["point", "radius", "color"]);
         return {
             color: coerceColor(obj.color),
-            radius: coerceNumber(obj.radius, undefined, 0, 65535),
-            point: coerceVector(obj.point)
+            radius: coerceNumber(obj.radius, 0, 65535),
+            point: coerceVector(obj.point),
+            kind: "point"
         };
     }
     else {
-        coerceObject(value, undefined, ["color"]);
+        coerceObject(value, ["color"]);
         return {
-            color: coerceColor((value as any).color)
+            color: coerceColor(obj.color),
+            kind: "ambient"
         };
     }
 }
 
 function coerceCameraView(value: unknown | undefined, defaultValue: CameraView | undefined = undefined): CameraView {
-    value = coerceValue(value, defaultValue);
-    if (value === defaultValue) {
-        return value as CameraView;
+    const obj = coerceObject(value, ["up", "forward", "eye"]) as any;
+    if (obj === defaultValue) {
+        return defaultValue as CameraView;
     }
-    coerceObject(value, undefined, ["up", "forward", "eye"]);
     return {
-        up: coerceVector((value as any).up),
-        forward: coerceVector((value as any).forward),
-        eye: coerceVector((value as any).eye)
+        up: coerceVector(obj.up),
+        forward: coerceVector(obj.forward),
+        eye: coerceVector(obj.eye)
     };
 }
 
 function coerceCameraProjection(value: unknown | undefined, defaultValue: CameraProjection | undefined = undefined): CameraProjection {
-    value = coerceValue(value, defaultValue);
-    if (value === defaultValue) {
-        return value as CameraProjection;
+    const obj = coerceObject(value, ["kind", "horizontalFov", "verticalFov", "scale"], ["kind"]) as any;
+    if (obj === defaultValue) {
+        return defaultValue as CameraProjection;
     }
-    coerceObject(value, undefined, ["kind", "horizontalFov", "verticalFov", "scale"], ["kind"]);
-    if ((value as any).kind === "perspective") {
-        coerceObject(value, undefined, ["kind", "horizontalFov", "verticalFov"], []);
-        const obj = value as object;
+    if (obj.kind === "perspective") {
+        coerceObject(obj, ["kind", "horizontalFov", "verticalFov"], ["kind"]);
         if ("horizontalFov" in obj && "verticalFov" in obj) {
             throw new Error("Only one of horizontalFov and verticalFov can be specified.");
         }
         if ("horizontalFov" in obj) {
             return {
                 kind: "perspective",
-                horizontalFov: coerceNumber((obj as any).horizontalFov, 90, 10, 170)
+                horizontalFov: coerceNumber(obj.horizontalFov, 10, 170)
             };
         }
         else if ("verticalFov" in obj) {
             return {
                 kind: "perspective",
-                verticalFov: coerceNumber((obj as any).verticalFov, 60, 10, 170)
+                verticalFov: coerceNumber(obj.verticalFov, 10, 170)
             };
         }
         else {
@@ -240,53 +253,80 @@ function coerceCameraProjection(value: unknown | undefined, defaultValue: Camera
             };
         }
     } else {
-        coerceObject(value, undefined, ["kind", "scale"]);
-        if ((value as any).kind !== "orthographic") {
+        coerceObject(obj, ["kind", "scale"]);
+        if (obj.kind !== "orthographic") {
             throw new Error("Unknown camera projection kind.");
         }
         return {
             kind: "orthographic",
-            scale: coerceNumber((value as any).scale, 1, 0, 65535)
+            scale: coerceNumber(obj.scale, 0, 65535, 1)
         };
     }
 }
 
 function coerceCamera(value: unknown | undefined, defaultValue: Camera | undefined = undefined): Camera {
-    value = coerceValue(value, defaultValue);
-    if (value === defaultValue) {
-        return value as Camera;
+    const obj = coerceObject(value, ["view", "projection"]) as any;
+    if (obj === defaultValue) {
+        return defaultValue as Camera;
     }
-    coerceObject(value, ["view", "projection"]);
     return {
-        view: coerceCameraView((value as any).view),
-        projection: coerceCameraProjection((value as any).projection),
+        view: coerceCameraView(obj.view),
+        projection: coerceCameraProjection(obj.projection),
     };
 }
 
-function coerceKeyframed<TValue>(value: unknown | undefined, coerceSimpleValue: (value: unknown) => TValue, defaultValue: Keyframed<TValue> | undefined = undefined): Keyframed<TValue> {
+function coerceKeyframe<TValue>(value: unknown | undefined, coerceSimpleValue: (value: unknown) => TValue, defaultValue: Keyframe<TValue> | undefined = undefined): Keyframe<TValue> {
+    const obj = coerceObject(value, ["time", "value"]) as any;
+    if (obj === defaultValue) {
+        return defaultValue as Keyframe<TValue>;
+    }
+    return {
+        value: coerceSimpleValue(obj.value),
+        time: coerceNumber(obj.time, 0, 60 * 60 * 24)
+    };
+}
+
+function coerceKeyframed<TValue>(value: unknown | undefined, coerceSimpleValue: (value: unknown) => TValue, defaultValue: TValue | undefined = undefined): Keyframed<TValue> {
     value = coerceValue(value, defaultValue);
     if (value === defaultValue) {
-        return value as Keyframed<TValue>;
+        return [{
+            time: 0,
+            value: defaultValue as TValue
+        }];
     }
-    if (isObject(value) && "time" in (value as object) && "value" in (value as object)) {
-        coerceObject(value, ["time", "value"]);
-        return {
-            value: coerceSimpleValue((value as any).value),
-            time: coerceNumber((value as any).time, undefined, 0, 60 * 60 * 24)
-        };
+    if (isArray(value)) {
+        const keyframes = coerceArray(value, undefined, 1).map(k => coerceKeyframe(k, coerceSimpleValue));
+        keyframes.sort((a, b) => (b.time - a.time));
+        for (let i = 1; i < keyframes.length; i++) {
+            if (keyframes[i].time == keyframes[i - 1].time) {
+                throw new Error("Multiple keyframes with the same time for the same property.");
+            }
+        }
+        return keyframes;
     }
     else {
-        return coerceSimpleValue(value);
+        return [{
+            time: 0,
+            value: coerceSimpleValue(value)
+        }];
     }
 }
 
-function coerceName(value: unknown | undefined, defaultValue: string | undefined = undefined): string {
+function coerceString(value: unknown | undefined, defaultValue: string | undefined = undefined): string {
     value = coerceValue(value, defaultValue);
     if (value === defaultValue) {
-        return value as string;
+        return defaultValue as string;
     }
     if (!isString(value)) {
         throw new Error("Expected a string.");
+    }
+    return value as string;
+}
+
+function coerceName(value: unknown | undefined, defaultValue: string | undefined = undefined): string {
+    value = coerceString(value, defaultValue);
+    if (value === defaultValue) {
+        return defaultValue as string;
     }
     if (!new RegExp("^[\w]+$").test(value as string)) { // TODO improve regex
         throw new Error("Invalid name format.");
@@ -295,38 +335,78 @@ function coerceName(value: unknown | undefined, defaultValue: string | undefined
 }
 
 function coerceEnum<TEnum>(value: unknown | undefined, entries: TEnum[], defaultValue: string | undefined = undefined): TEnum {
-    value = coerceValue(value, defaultValue);
-    if (value === defaultValue) {
-        return value as TEnum;
+    const str = coerceString(value, defaultValue);
+    if (str === defaultValue) {
+        return defaultValue as TEnum;
     }
-    if (!isString(value)) {
-        throw new Error("Expected a string.");
-    }
-    if (entries.indexOf(value as TEnum) === -1) {
+    if (entries.indexOf(str as TEnum) === -1) {
         throw new Error(`Expected one of ${entries}.`);
     }
-    return value as TEnum;
+    return str as TEnum;
+}
+
+function coerceSize(value: unknown | undefined, defaultValue: Size | undefined = undefined): Size {
+    const obj = coerceObject(value, ["width", "height"], "all", defaultValue) as any;
+    if (obj === defaultValue) {
+        return defaultValue as Size;
+    }
+    return {
+        width: coerceNumber(obj.width, 8, 65535),
+        height: coerceNumber(obj.height, 8, 65535)
+    };
+}
+
+function ensureKeyframeConsistency<TValue, TProp>(keyframes: Keyframed<TValue>, prop: (value: TValue) => TProp): void {
+    if (keyframes.length > 0) {
+        const first = prop(keyframes[0].value);
+        for (const keyframe of keyframes) {
+            if (prop(keyframe.value) !== first) {
+                throw new Error("Keyframes store non-intepolable properties.");
+            }
+        }
+    }
+}
+
+function coercePolygon(value: unknown | undefined, defaultValue: Polygon | undefined = undefined): Polygon {
+    return coerceArray(value, 0, Infinity, defaultValue).map(coerceVector);
+}
+
+function coerceKeyframedCamera(value: unknown | undefined, defaultValue: Camera | undefined = undefined): Keyframed<Camera> {
+    const keyframes = coerceKeyframed(value, coerceCamera, defaultValue);
+    ensureKeyframeConsistency(keyframes, k => k.projection.kind);
+    return keyframes;
+}
+
+function coerceKeyframedLight(value: unknown | undefined, defaultValue: Light | undefined = undefined): Keyframed<Light> {
+    const keyframes = coerceKeyframed(value, coerceLight, defaultValue);
+    ensureKeyframeConsistency(keyframes, k => k.kind);
+    return keyframes;
+}
+
+function coerceKeyframedPolygon(value: unknown | undefined, defaultValue: Polygon | undefined = undefined): Keyframed<Polygon> {
+    const keyframes = coerceKeyframed(value, coercePolygon, defaultValue);
+    ensureKeyframeConsistency(keyframes, k => k.length);
+    return keyframes;
 }
 
 function coerceScene(value: unknown | undefined, defaultValue: Scene | undefined = undefined): Scene {
-    value = coerceValue(value, defaultValue);
-    if (value === defaultValue) {
-        return value as Scene;
+    const obj = coerceObject(value, ["fillColor", "strokeColor", "strokeWidth", "lights", "camera", "fit", "polygons", "cullOccluded", "cullBackFaces", "name", "anchorPoint"], ["camera", "polygons"]) as any;
+    if (obj === defaultValue) {
+        return defaultValue as Scene;
     }
-    coerceObject(value, undefined, ["fillColor", "strokeColor", "strokeWidth", "lights", "camera", "fit", "polygons", "cullOccluded", "cullBackFaces", "name", "anchorPoint"], ["camera", "polygons"]);
-    const obj = value as any;
     const scene: Scene = {
-        anchorPoint: coerceKeyframed<Vector>(obj.anchorPoint, coerceVector, [0, 0, 0]),
-        camera: coerceKeyframed<Camera>(obj.camera, coerceCamera),
-        cullBackFaces: coerceBoolean(obj.cullBackFaces, true),
-        cullOccluded: coerceBoolean(obj.cullOccluded, true),
-        fillColor: coerceKeyframed(obj.fillColor, coerceColor, [1, 1, 1]),
-        strokeColor: coerceKeyframed(obj.fillColor, coerceColor, [0, 0, 0]),
-        strokeWidth: coerceNumber(obj.strokeWidth, 10, 0, 65535),
-        fit: coerceEnum<FitMode>(obj.fit, ["width", "height", "max", "min"], "min"),
-        lights: coerceArray(obj.lights, [{ color: { r: 0.8, g: 0.8, b: 0.8 } }]).map(l => coerceKeyframed<Light>(l, coerceLight)),
-        polygons: coerceArray(obj.polygons).map(p => coerceKeyframed<Polygon>(p, sp => coerceArray(sp).map(coerceVector))),
-        name: coerceName(obj.name, "My 3D scene")
+        anchorPoint: doing("processing anchorPoint", () => coerceKeyframed<Vector>(obj.anchorPoint, coerceVector, [0, 0, 0])),
+        camera: doing("processing camera", () => coerceKeyframedCamera(obj.camera)),
+        cullBackFaces: doing("processing cullBackFaces", () => coerceBoolean(obj.cullBackFaces, true)),
+        cullOccluded: doing("processing cullOccluded", () => coerceBoolean(obj.cullOccluded, true)),
+        fillColor: doing("processing fillColor", () => coerceKeyframed(obj.fillColor, coerceColor, [1, 1, 1])),
+        strokeColor: doing("processing strokeColor", () => coerceKeyframed(obj.fillColor, coerceColor, [0, 0, 0])),
+        strokeWidth: doing("processing strokeWidth", () => coerceKeyframed(obj.strokeWidth, v => coerceNumber(v, 0, 65535), 10)),
+        fit: doing("processing fit", () => coerceEnum<FitMode>(obj.fit, ["width", "height", "max", "min"], "min")),
+        lights: doing("processing lights", () => coerceArray(obj.lights, 0, Infinity, [{ color: [0.8, 0.8, 0.8] }]).map(coerceKeyframedLight)),
+        polygons: doing("processing polygons", () => coerceArray(obj.polygons).map(coerceKeyframedPolygon)),
+        name: doing("processing name", () => coerceName(obj.name, "My 3D scene")),
+        size: doing("processing size", () => coerceSize(obj.size))
     };
     return scene;
 }
