@@ -346,7 +346,7 @@ function coerceName(value: unknown | undefined, defaultValue: string | undefined
     if (value === defaultValue) {
         return defaultValue as string;
     }
-    if (!new RegExp("^[\w]+$").test(value as string)) { // TODO improve regex
+    if (!new RegExp("^([ \\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}]*[\\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}][ \\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}]*)*$").test(value as string)) {
         throw new Error("Invalid name format.");
     }
     return value as string;
