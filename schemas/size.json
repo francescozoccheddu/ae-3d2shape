@@ -4,8 +4,7 @@
     "$defs": {
         "dimension": {
             "type": "number",
-            "min": 8,
-            "max": 65535
+            "min": 0
         }
     },
     "type": "object",

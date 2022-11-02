@@ -31,7 +31,17 @@
             "type": "array",
             "items": {
                 "$ref": "light-property.json"
-            }
+            },
+            "default": [
+                {
+                    "kind": "ambient",
+                    "color": [
+                        0.8,
+                        0.8,
+                        0.8
+                    ]
+                }
+            ]
         },
         "camera": {
             "$ref": "camera-property.json"
@@ -42,13 +52,19 @@
                 "height",
                 "min",
                 "max"
-            ]
+            ],
+            "default": "min"
         },
         "size": {
             "$ref": "size.json"
         },
         "anchorPoint": {
-            "$ref": "vector-property.json"
+            "$ref": "vector-property.json",
+            "default": [
+                0,
+                0,
+                0
+            ]
         },
         "cullOccluded": {
             "type": "boolean",
@@ -57,6 +73,13 @@
         "cullBackFaces": {
             "type": "boolean",
             "default": true
+        },
+        "extraRefreshes": {
+            "type": "array",
+            "items": {
+                "$ref": "time.json"
+            },
+            "default": []
         }
     },
     "required": [

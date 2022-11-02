@@ -1,7 +1,5 @@
-export type Time = number;
-
 export type Keyframe<TValue> = {
-    readonly time: Time,
+    readonly time: number,
     readonly value: TValue
 };
 
@@ -82,5 +80,6 @@ export type Scene = {
     readonly cullBackFaces: boolean,
     readonly anchorPoint: Keyframed<Vector>,
     readonly fit: FitMode,
-    readonly size: Size
+    readonly size: Size,
+    readonly extraRefreshes: number[]
 };

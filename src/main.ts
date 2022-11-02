@@ -1,9 +1,10 @@
+import doing from "./doing";
 import loadScene from "./loadScene";
 import { Scene } from "./scene";
 import "./vec";
 
 function main(): void {
-    const scene: Scene | null = loadScene();
+    const scene: Scene | null = doing("parsing scene file", loadScene);
     if (scene === null) {
         return;
     }

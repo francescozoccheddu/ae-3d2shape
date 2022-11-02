@@ -282,7 +282,7 @@ function coerceKeyframe<TValue>(value: unknown | undefined, coerceSimpleValue: (
     }
     return {
         value: coerceSimpleValue(obj.value),
-        time: coerceNumber(obj.time, 0, 60 * 60 * 24)
+        time: coerceTime(obj.time)
     };
 }
 
@@ -351,8 +351,8 @@ function coerceSize(value: unknown | undefined, defaultValue: Size | undefined =
         return defaultValue as Size;
     }
     return {
-        width: coerceNumber(obj.width, 8, 65535),
-        height: coerceNumber(obj.height, 8, 65535)
+        width: coerceNumber(obj.width, 0),
+        height: coerceNumber(obj.height, 0)
     };
 }
 
@@ -389,24 +389,29 @@ function coerceKeyframedPolygon(value: unknown | undefined, defaultValue: Polygo
     return keyframes;
 }
 
+function coerceTime(value: unknown | undefined, defaultValue: number | undefined = undefined): number {
+    return coerceNumber(value, 0, 60 * 60 * 24, defaultValue);
+}
+
 function coerceScene(value: unknown | undefined, defaultValue: Scene | undefined = undefined): Scene {
-    const obj = coerceObject(value, ["fillColor", "strokeColor", "strokeWidth", "lights", "camera", "fit", "polygons", "cullOccluded", "cullBackFaces", "name", "anchorPoint"], ["camera", "polygons"]) as any;
+    const obj = coerceObject(value, ["fillColor", "strokeColor", "strokeWidth", "lights", "camera", "fit", "polygons", "cullOccluded", "cullBackFaces", "name", "anchorPoint", "extraRefreshes"], ["camera", "polygons"]) as any;
     if (obj === defaultValue) {
         return defaultValue as Scene;
     }
     const scene: Scene = {
-        anchorPoint: doing("processing anchorPoint", () => coerceKeyframed<Vector>(obj.anchorPoint, coerceVector, [0, 0, 0])),
-        camera: doing("processing camera", () => coerceKeyframedCamera(obj.camera)),
-        cullBackFaces: doing("processing cullBackFaces", () => coerceBoolean(obj.cullBackFaces, true)),
-        cullOccluded: doing("processing cullOccluded", () => coerceBoolean(obj.cullOccluded, true)),
-        fillColor: doing("processing fillColor", () => coerceKeyframed(obj.fillColor, coerceColor, [1, 1, 1])),
-        strokeColor: doing("processing strokeColor", () => coerceKeyframed(obj.fillColor, coerceColor, [0, 0, 0])),
-        strokeWidth: doing("processing strokeWidth", () => coerceKeyframed(obj.strokeWidth, v => coerceNumber(v, 0, 65535), 10)),
-        fit: doing("processing fit", () => coerceEnum<FitMode>(obj.fit, ["width", "height", "max", "min"], "min")),
-        lights: doing("processing lights", () => coerceArray(obj.lights, 0, Infinity, [{ color: [0.8, 0.8, 0.8] }]).map(coerceKeyframedLight)),
-        polygons: doing("processing polygons", () => coerceArray(obj.polygons).map(coerceKeyframedPolygon)),
-        name: doing("processing name", () => coerceName(obj.name, "My 3D scene")),
-        size: doing("processing size", () => coerceSize(obj.size))
+        anchorPoint: doing("reading anchorPoint", () => coerceKeyframed<Vector>(obj.anchorPoint, coerceVector, [0, 0, 0])),
+        camera: doing("reading camera", () => coerceKeyframedCamera(obj.camera)),
+        cullBackFaces: doing("reading cullBackFaces", () => coerceBoolean(obj.cullBackFaces, true)),
+        cullOccluded: doing("reading cullOccluded", () => coerceBoolean(obj.cullOccluded, true)),
+        fillColor: doing("reading fillColor", () => coerceKeyframed(obj.fillColor, coerceColor, [1, 1, 1])),
+        strokeColor: doing("reading strokeColor", () => coerceKeyframed(obj.fillColor, coerceColor, [0, 0, 0])),
+        strokeWidth: doing("reading strokeWidth", () => coerceKeyframed(obj.strokeWidth, v => coerceNumber(v, 0, 65535), 10)),
+        fit: doing("reading fit", () => coerceEnum<FitMode>(obj.fit, ["width", "height", "max", "min"], "min")),
+        lights: doing("reading lights", () => coerceArray(obj.lights, 0, Infinity, [{ color: [0.8, 0.8, 0.8], kind: 'ambient' }]).map(coerceKeyframedLight)),
+        polygons: doing("reading polygons", () => coerceArray(obj.polygons).map(coerceKeyframedPolygon)),
+        name: doing("reading name", () => coerceName(obj.name, "My 3D scene")),
+        size: doing("reading size", () => coerceSize(obj.size)),
+        extraRefreshes: doing("reading extraRefreshes", () => coerceArray(obj.extraRefreshes).map(coerceTime))
     };
     return scene;
 }
