@@ -4,7 +4,7 @@
     "$defs": {
         "dimension": {
             "type": "number",
-            "min": 0
+            "minimum": 0
         }
     },
     "type": "object",
