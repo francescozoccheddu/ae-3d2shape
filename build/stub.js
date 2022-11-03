@@ -64,7 +64,11 @@
         function File(path) {
             this.path = path;
         }
-        File.prototype.open = function () { };
+        File.prototype.open = function (mode) {
+            if (mode !== 'r') {
+                throw new Error("Only 'r' mode is supported.");
+            }
+        };
         File.prototype.close = function () { };
         File.prototype.read = function () {
             return require("fs").readFileSync(this.path).toString();
