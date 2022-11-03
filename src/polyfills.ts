@@ -1,7 +1,7 @@
 import "@extendscript/aes.patch.array.indexof";
 import "@extendscript/aes.patch.array.isarray";
 import "@extendscript/aes.patch.array.map";
-import "json-js/json2.js";
+import "@extendscript/aes.patch.json";
 
 declare global {
     const JSON: {

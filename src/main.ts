@@ -16,7 +16,7 @@ try {
 }
 catch (e) {
     if ($.level === 0) {
-        Window.alert((e as Error).description, "Error while loading the scene", true);
+        Window.alert((e as Error).description, "Error while importing the scene", true);
     }
     else {
         throw e;
