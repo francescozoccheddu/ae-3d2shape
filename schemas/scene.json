@@ -22,10 +22,7 @@
             "default": 10
         },
         "polygons": {
-            "type": "array",
-            "items": {
-                "$ref": "polygon-property.json"
-            }
+            "$ref": "polygons-property.json"
         },
         "lights": {
             "type": "array",

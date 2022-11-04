@@ -20,7 +20,7 @@
         // Window
         global.Window = {
             alert: function (message, title, errorIcon) {
-                mlog("Alert");
+                mlog("Alert window");
                 if (title) {
                     mlog(" with title '");
                     log(title);

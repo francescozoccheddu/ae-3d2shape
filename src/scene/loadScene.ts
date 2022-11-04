@@ -2,8 +2,9 @@ import parseColor from "parse-color";
 import doing from "../utils/doing";
 import { deg2rad, polygonNormal } from "../geometry/trig";
 import "../utils/polyfills";
-import { AmbientLight, Camera, CameraProjection, CameraView, Color, DirectionalLight, FitMode, Keyframe, Keyframed, Light, OrthographicCameraProjection, PerspectiveCameraProjection, PointLight, Polygon, Scene, Size } from "./scene";
+import { AmbientLight, Camera, CameraProjection, CameraView, Color, DirectionalLight, FitMode, Keyframe, Keyframed, Light, OrthographicCameraProjection, PerspectiveCameraProjection, PointLight, Polygon, Polygons, Scene, Size } from "./scene";
 import { RVec3, isAlmNull, norm } from "../geometry/rvec";
+import { all } from "../geometry/bvec";
 
 function isObject(value: unknown | undefined): boolean {
     return typeof value === "object" && !isArray(value) && value !== null;
@@ -182,7 +183,7 @@ function coerceVector(value: unknown): RVec3 {
 
 function coerceDirection(value: unknown): RVec3 {
     const vec = coerceVector(value);
-    if (isAlmNull(vec)) {
+    if (all(isAlmNull(vec))) {
         throw new Error("Null direction vector.");
     }
     return norm<3>(vec);
@@ -235,8 +236,8 @@ function coerceCameraView(value: unknown): CameraView {
     const obj = coerceObject(value, ["up", "forward", "eye"] as const);
     return {
         up: prop(obj, "up", coerceDirection),
-        forward: prop(obj, "up", coerceDirection),
-        eye: prop(obj, "up", coerceDirection),
+        forward: prop(obj, "forward", coerceDirection),
+        eye: prop(obj, "eye", coerceVector),
     };
 }
 
@@ -252,18 +253,18 @@ function coerceOrthographicCameraProjection(value: unknown): OrthographicCameraP
 }
 
 function coercePerspectiveCameraProjection(value: unknown): PerspectiveCameraProjection {
-    const obj = coerceObject(value, ["fieldOfViewDegress"] as const, ["kind"] as const);
+    const obj = coerceObject(value, ["fieldOfViewDegrees"] as const, ["kind"] as const);
     if (obj.kind !== "perspective") {
         throw new Error(`Unexpected kind "${obj.kind}".`);
     }
     return {
         kind: "perspective",
-        fovRad: deg2rad(prop(obj, "fieldOfViewDegress", v => coerceNumber(v, 10, 170), 60))
+        fovRad: deg2rad(prop(obj, "fieldOfViewDegrees", v => coerceNumber(v, 10, 170), 60))
     };
 }
 
 function coerceCameraProjection(value: unknown): CameraProjection {
-    const obj = coerceObject(value, ["kind"] as const);
+    const obj = coerceObject(value, "any", ["kind"] as const);
     if (obj.kind === "perspective") {
         return doing("parsing perspective projection", () => coercePerspectiveCameraProjection(obj));
     } else if (obj.kind === "orthohraphic") {
@@ -296,9 +297,13 @@ function coerceSize(value: unknown): Size {
 }
 
 function coercePolygon(value: unknown): Polygon {
-    const points = map(coerceArray(value, 2), coerceVector);
+    const points = map(coerceArray(value, 3), coerceVector);
     polygonNormal(points);
     return points;
+}
+
+function coercePolygons(value: unknown): Polygons {
+    return map(coerceArray(value), coercePolygon);
 }
 
 function coerceTime(value: unknown): number {
@@ -357,17 +362,14 @@ function coerceKeyframedLight(value: unknown): Keyframed<Light> {
     return keyframes;
 }
 
-function coerceKeyframedPolygon(value: unknown): Keyframed<Polygon> {
-    const keyframes = coerceKeyframed(value, coercePolygon);
+function coerceKeyframedPolygons(value: unknown): Keyframed<Polygons> {
+    const keyframes = coerceKeyframed(value, coercePolygons);
     ensureKeyframeConsistency(keyframes, k => k.length);
     return keyframes;
 }
 
-function coerceScene(value: unknown | undefined, defaultValue: Scene | undefined = undefined): Scene {
+function coerceScene(value: unknown | undefined): Scene {
     const obj = coerceObject(value, ["fillColor", "strokeColor", "strokeWidth", "lights", "fit", "cullOccluded", "cullBackFaces", "name", "anchorPoint", "extraRefreshes"] as const, ["camera", "polygons", "size"] as const);
-    if (obj === defaultValue) {
-        return defaultValue as Scene;
-    }
     const scene: Scene = {
         anchorPoint: prop(obj, "anchorPoint", v => coerceKeyframed<RVec3>(v, coerceVector), singleKeyframe([0, 0, 0])),
         camera: prop(obj, "camera", coerceKeyframedCamera),
@@ -378,7 +380,7 @@ function coerceScene(value: unknown | undefined, defaultValue: Scene | undefined
         strokeWidth: prop(obj, "strokeWidth", v => coerceKeyframed(v, v2 => coerceNumber(v2, 0)), singleKeyframe(0)),
         fit: prop(obj, "fit", v => coerceEnum<FitMode[]>(v, ["width", "height", "max", "min"]), "min"),
         lights: prop(obj, "lights", v => map(coerceArray(v), coerceKeyframedLight), [singleKeyframe({ kind: "ambient", color: [0.8, 0.8, 0.8] })]),
-        polygons: prop(obj, "polygons", v => map(coerceArray(v), coerceKeyframedPolygon)),
+        polygons: prop(obj, "polygons", coerceKeyframedPolygons),
         name: prop(obj, "name", coerceName, "My 3D scene"),
         size: prop(obj, "size", coerceSize),
         extraRefreshes: prop(obj, "extraRefreshes", v => map(coerceArray(v), coerceTime), []),

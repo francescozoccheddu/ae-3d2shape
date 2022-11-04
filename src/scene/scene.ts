@@ -11,6 +11,8 @@ export type Color = readonly [number, number, number];
 
 export type Polygon = readonly RVec3[];
 
+export type Polygons = readonly Polygon[];
+
 export type LightKind = "point" | "ambient" | "directional";
 
 export type AmbientLight = {
@@ -71,7 +73,7 @@ export type Scene = {
     readonly strokeWidth: Keyframed<number>,
     readonly camera: Keyframed<Camera>,
     readonly lights: readonly Keyframed<Light>[],
-    readonly polygons: readonly Keyframed<Polygon>[],
+    readonly polygons: Keyframed<Polygons>,
     readonly name: string,
     readonly cullOccluded: boolean,
     readonly cullBackFaces: boolean,

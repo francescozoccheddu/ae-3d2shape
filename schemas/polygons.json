@@ -3,7 +3,6 @@
     "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schemas/polygon.json",
     "type": "array",
     "items": {
-        "$ref": "vector.json"
-    },
-    "minItems": 3
+        "$ref": "polygon.json"
+    }
 }

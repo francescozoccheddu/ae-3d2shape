@@ -11,7 +11,7 @@
                         "$ref": "time.json"
                     },
                     "value": {
-                        "$ref": "polygon.json"
+                        "$ref": "polygons.json"
                     }
                 },
                 "required": [
@@ -23,7 +23,7 @@
             "minItems": 1
         },
         {
-            "$ref": "polygon.json"
+            "$ref": "polygons.json"
         }
     ]
 }
