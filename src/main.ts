@@ -1,7 +1,6 @@
-import doing from "./doing";
-import loadScene from "./loadScene";
-import { Scene } from "./scene";
-import "./vec";
+import doing from "./utils/doing";
+import loadScene from "./scene/loadScene";
+import { Scene } from "./scene/scene";
 
 function main(): void {
     const scene: Scene | null = doing("loading scene file", loadScene);

@@ -1,3 +1,5 @@
+import { RVec3 } from "../geometry/rvec";
+
 export type Keyframe<TValue> = {
     readonly time: number,
     readonly value: TValue
@@ -7,9 +9,7 @@ export type Keyframed<TValue> = Keyframe<TValue>[];
 
 export type Color = readonly [number, number, number];
 
-export type Vector = readonly [number, number, number];
-
-export type Polygon = readonly Vector[];
+export type Polygon = readonly RVec3[];
 
 export type LightKind = "point" | "ambient" | "directional";
 
@@ -19,13 +19,13 @@ export type AmbientLight = {
 };
 
 export type DirectionalLight = {
-    readonly direction: Vector,
+    readonly direction: RVec3,
     readonly color: Color
     readonly kind: "directional";
 };
 
 export type PointLight = {
-    readonly point: Vector,
+    readonly point: RVec3,
     readonly radius: number,
     readonly color: Color
     readonly kind: "point";
@@ -40,20 +40,17 @@ export type OrthographicCameraProjection = {
     readonly kind: "orthographic"
 };
 
-export type PerspectiveCameraProjection = ({
-    readonly horizontalFov: number
-} | {
-    readonly verticalFov: number
-}) & {
+export type PerspectiveCameraProjection = {
+    readonly fovRad: number
     readonly kind: "perspective";
 };
 
 export type CameraProjection = OrthographicCameraProjection | PerspectiveCameraProjection;
 
 export type CameraView = {
-    readonly up: Vector,
-    readonly forward: Vector,
-    readonly eye: Vector
+    readonly up: RVec3,
+    readonly forward: RVec3,
+    readonly eye: RVec3
 };
 
 export type Camera = {
@@ -78,7 +75,7 @@ export type Scene = {
     readonly name: string,
     readonly cullOccluded: boolean,
     readonly cullBackFaces: boolean,
-    readonly anchorPoint: Keyframed<Vector>,
+    readonly anchorPoint: Keyframed<RVec3>,
     readonly fit: FitMode,
     readonly size: Size,
     readonly extraRefreshes: number[]

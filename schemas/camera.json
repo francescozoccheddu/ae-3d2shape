@@ -39,39 +39,21 @@
             ],
             "additionalProperties": false
         },
-        "projection-fov-angle": {
-            "type": "number",
-            "minimum": 1,
-            "maximum": 179,
-            "default": 60
-        },
         "perspective-projection": {
             "type": "object",
             "properties": {
                 "kind": {
                     "const": "perspective"
                 },
-                "verticalFov": {
-                    "$ref": "#/$defs/projection-fov-angle"
-                },
-                "horizontalFov": {
-                    "$ref": "#/$defs/projection-fov-angle"
+                "fieldOfViewDegress": {
+                    "type": "number",
+                    "minimum": 10,
+                    "maximum": 170,
+                    "default": 60
                 }
             },
-            "allOf": [
-                {
-                    "required": [
-                        "kind"
-                    ]
-                },
-                {
-                    "not": {
-                        "required": [
-                            "verticalFov",
-                            "horizontalFov"
-                        ]
-                    }
-                }
+            "required": [
+                "kind"
             ],
             "additionalProperties": false
         },

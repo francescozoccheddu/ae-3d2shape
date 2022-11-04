@@ -12,7 +12,8 @@
     "shape"
   ],
   "scripts": {
-    "start": "ts-node --project build/tsconfig.json build/main.ts -d"
+    "start": "ts-node --project build/tsconfig.json build/main.ts -o ae-3d2shape.jsx",
+    "test": "ts-node --project build/tsconfig.json build/main.ts -o ae-3d2shape-test.jsx -d && node ae-3d2shape-test.jsx"
   },
   "repository": {
     "type": "git",

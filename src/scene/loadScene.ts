@@ -1,8 +1,9 @@
 import parseColor from "parse-color";
-import doing from "./doing";
-import "./polyfills";
-import { AmbientLight, Camera, CameraProjection, CameraView, Color, DirectionalLight, FitMode, Keyframe, Keyframed, Light, OrthographicCameraProjection, PerspectiveCameraProjection, PointLight, Polygon, Scene, Size, Vector } from "./scene";
-import { fromVector, isAlmNull, norm } from "./vec";
+import doing from "../utils/doing";
+import { deg2rad } from "../geometry/trig";
+import "../utils/polyfills";
+import { AmbientLight, Camera, CameraProjection, CameraView, Color, DirectionalLight, FitMode, Keyframe, Keyframed, Light, OrthographicCameraProjection, PerspectiveCameraProjection, PointLight, Polygon, Scene, Size } from "./scene";
+import { RVec3, isAlmNull, norm } from "../geometry/rvec";
 
 function isObject(value: unknown | undefined): boolean {
     return typeof value === "object" && !isArray(value) && value !== null;
@@ -161,10 +162,10 @@ function coerceColor(value: unknown): Color {
     }
 }
 
-function coerceVector(value: unknown): Vector {
+function coerceVector(value: unknown): RVec3 {
     if (isArray(value)) {
         const array = coerceArray(value, 3, 3);
-        return map(array, coerceNumber) as Vector;
+        return map(array, coerceNumber) as RVec3;
     }
     else if (isObject(value)) {
         const obj = coerceObject(value, ["x", "y", "z"] as const);
@@ -179,12 +180,12 @@ function coerceVector(value: unknown): Vector {
     }
 }
 
-function coerceDirection(value: unknown): Vector {
+function coerceDirection(value: unknown): RVec3 {
     const vec = coerceVector(value);
     if (isAlmNull(vec)) {
         throw new Error("Null direction vector.");
     }
-    return norm<3>(fromVector(vec));
+    return norm<3>(vec);
 }
 
 function coerceAmbientLight(value: unknown): AmbientLight {
@@ -251,31 +252,14 @@ function coerceOrthographicCameraProjection(value: unknown): OrthographicCameraP
 }
 
 function coercePerspectiveCameraProjection(value: unknown): PerspectiveCameraProjection {
-    const obj = coerceObject(value, ["horizontalFov", "verticalFov"] as const, ["kind"] as const);
+    const obj = coerceObject(value, ["fieldOfViewDegress"] as const, ["kind"] as const);
     if (obj.kind !== "perspective") {
         throw new Error(`Unexpected kind "${obj.kind}".`);
     }
-    if ("horizontalFov" in obj && "verticalFov" in obj) {
-        throw new Error("Only one of horizontalFov and verticalFov can be specified.");
-    }
-    if ("horizontalFov" in obj) {
-        return {
-            kind: "perspective",
-            horizontalFov: prop(obj, "horizontalFov", v => coerceNumber(obj, 10, 170))
-        };
-    }
-    else if ("verticalFov" in obj) {
-        return {
-            kind: "perspective",
-            horizontalFov: prop(obj, "verticalFov", v => coerceNumber(obj, 10, 170))
-        };
-    }
-    else {
-        return {
-            kind: "perspective",
-            verticalFov: 60
-        };
-    }
+    return {
+        kind: "perspective",
+        fovRad: deg2rad(prop(obj, "fieldOfViewDegress", v => coerceNumber(v, 10, 170), 60))
+    };
 }
 
 function coerceCameraProjection(value: unknown): CameraProjection {
@@ -383,7 +367,7 @@ function coerceScene(value: unknown | undefined, defaultValue: Scene | undefined
         return defaultValue as Scene;
     }
     const scene: Scene = {
-        anchorPoint: prop(obj, "anchorPoint", v => coerceKeyframed<Vector>(v, coerceVector), singleKeyframe([0, 0, 0])),
+        anchorPoint: prop(obj, "anchorPoint", v => coerceKeyframed<RVec3>(v, coerceVector), singleKeyframe([0, 0, 0])),
         camera: prop(obj, "camera", coerceKeyframedCamera),
         cullBackFaces: prop(obj, "cullBackFaces", coerceBoolean, true),
         cullOccluded: prop(obj, "cullOccluded", coerceBoolean, true),
