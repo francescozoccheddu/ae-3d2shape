@@ -1,7 +1,8 @@
 import { cot } from "./trig";
-import { cross, dot, rvec, RVec3, RVec4 } from "./rvec";
+import { ConstRVec3, ConstRVec4, cross, dot, rvec, RVec3, RVec4 } from "./rvec";
 
 export type RMat4 = [RVec4, RVec4, RVec4, RVec4];
+export type ConstRMat4 = Readonly<RMat4>
 
 export function idt(): RMat4 {
     return [
@@ -24,10 +25,10 @@ export function nll(): RMat4 {
 export function mul(a: RMat4, b: RVec4): RVec4;
 export function mul(a: RMat4, b: RMat4): RMat4;
 
-export function mul(a: RMat4, b: RMat4 | RVec4): RMat4 | RVec4 {
+export function mul(a: ConstRMat4, b: ConstRMat4 | ConstRVec4): RMat4 | RVec4 {
     if (isNaN(b[0] as number)) {
-        const bm: RMat4 = b as RMat4;
-        const res: RMat4 = nll();
+        const bm = b as ConstRMat4;
+        const res = nll();
         for (let r = 0; r < 4; r++) {
             for (let c = 0; c < 4; c++) {
                 for (let i = 0; i < 4; i++) {
@@ -38,8 +39,8 @@ export function mul(a: RMat4, b: RMat4 | RVec4): RMat4 | RVec4 {
         return res;
     }
     else {
-        const bv: RVec4 = b as RVec4;
-        const res: RVec4 = rvec(4);
+        const bv = b as ConstRVec4;
+        const res = rvec(4);
         for (let r = 0; r < 4; r++) {
             for (let i = 0; i < 4; i++) {
                 res[r] += a[r][i] * bv[i];
@@ -49,7 +50,7 @@ export function mul(a: RMat4, b: RMat4 | RVec4): RMat4 | RVec4 {
     }
 }
 
-export function scaleMat(scale: RVec3): RMat4 {
+export function scaleMat(scale: ConstRVec3): RMat4 {
     const mat = idt();
     for (let i = 0; i < 3; i++) {
         mat[i][i] = scale[i];
@@ -57,7 +58,7 @@ export function scaleMat(scale: RVec3): RMat4 {
     return mat;
 }
 
-export function translationMat(translation: RVec3): RMat4 {
+export function translationMat(translation: ConstRVec3): RMat4 {
     const mat = idt();
     for (let i = 0; i < 3; i++) {
         mat[i][3] = translation[i];
@@ -65,7 +66,7 @@ export function translationMat(translation: RVec3): RMat4 {
     return mat;
 }
 
-export function rotationMat(axis: RVec3, angleRad: number): RMat4 {
+export function rotationMat(axis: ConstRVec3, angleRad: number): RMat4 {
     const u = axis[0];
     const v = axis[1];
     const w = axis[2];
@@ -93,7 +94,7 @@ export function orthographicProjMat(scale: number): RMat4 {
     return scaleMat([scale, scale, 1]);
 }
 
-export function viewMat(eye: RVec3, forward: RVec3, up: RVec3): RMat4 {
+export function viewMat(eye: ConstRVec3, forward: ConstRVec3, up: ConstRVec3): RMat4 {
     const right = cross(forward, up);
     return [
         [right[0], right[1], right[2], -dot(right, eye)],

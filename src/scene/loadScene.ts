@@ -1,6 +1,6 @@
 import parseColor from "parse-color";
 import doing from "../utils/doing";
-import { deg2rad } from "../geometry/trig";
+import { deg2rad, polygonNormal } from "../geometry/trig";
 import "../utils/polyfills";
 import { AmbientLight, Camera, CameraProjection, CameraView, Color, DirectionalLight, FitMode, Keyframe, Keyframed, Light, OrthographicCameraProjection, PerspectiveCameraProjection, PointLight, Polygon, Scene, Size } from "./scene";
 import { RVec3, isAlmNull, norm } from "../geometry/rvec";
@@ -296,7 +296,9 @@ function coerceSize(value: unknown): Size {
 }
 
 function coercePolygon(value: unknown): Polygon {
-    return map(coerceArray(value), coerceVector);
+    const points = map(coerceArray(value, 2), coerceVector);
+    polygonNormal(points);
+    return points;
 }
 
 function coerceTime(value: unknown): number {
