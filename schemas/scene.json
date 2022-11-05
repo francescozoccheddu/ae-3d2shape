@@ -71,12 +71,9 @@
             "type": "boolean",
             "default": true
         },
-        "extraRefreshes": {
-            "type": "array",
-            "items": {
-                "$ref": "time.json"
-            },
-            "default": []
+        "cullOutsideFrame": {
+            "type": "boolean",
+            "default": false
         }
     },
     "required": [

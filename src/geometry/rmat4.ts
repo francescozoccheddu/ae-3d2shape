@@ -22,8 +22,8 @@ export function nll(): RMat4 {
     ];
 }
 
-export function mul(a: RMat4, b: RVec4): RVec4;
-export function mul(a: RMat4, b: RMat4): RMat4;
+export function mul(a: ConstRMat4, b: ConstRVec4): RVec4;
+export function mul(a: ConstRMat4, b: ConstRMat4): RMat4;
 
 export function mul(a: ConstRMat4, b: ConstRMat4 | ConstRVec4): RMat4 | RVec4 {
     if (isNaN(b[0] as number)) {

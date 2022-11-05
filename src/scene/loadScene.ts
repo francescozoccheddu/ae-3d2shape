@@ -173,7 +173,7 @@ function coerceVector(value: unknown): RVec3 {
         return [
             prop(obj, "x", coerceNumber),
             prop(obj, "y", coerceNumber),
-            prop(obj, "z", coerceNumber),
+            prop(obj, "z", coerceNumber)
         ];
     }
     else {
@@ -298,8 +298,10 @@ function coerceSize(value: unknown): Size {
 
 function coercePolygon(value: unknown): Polygon {
     const points = map(coerceArray(value, 3), coerceVector);
-    polygonNormal(points);
-    return points;
+    return {
+        verts: points,
+        normal: polygonNormal(points)
+    };
 }
 
 function coercePolygons(value: unknown): Polygons {
@@ -369,12 +371,13 @@ function coerceKeyframedPolygons(value: unknown): Keyframed<Polygons> {
 }
 
 function coerceScene(value: unknown | undefined): Scene {
-    const obj = coerceObject(value, ["fillColor", "strokeColor", "strokeWidth", "lights", "fit", "cullOccluded", "cullBackFaces", "name", "anchorPoint", "extraRefreshes"] as const, ["camera", "polygons", "size"] as const);
+    const obj = coerceObject(value, ["fillColor", "strokeColor", "strokeWidth", "lights", "fit", "cullOccluded", "cullBackFaces", "cullOutsideFrame", "name", "anchorPoint"] as const, ["camera", "polygons", "size"] as const);
     const scene: Scene = {
         anchorPoint: prop(obj, "anchorPoint", v => coerceKeyframed<RVec3>(v, coerceVector), singleKeyframe([0, 0, 0])),
         camera: prop(obj, "camera", coerceKeyframedCamera),
         cullBackFaces: prop(obj, "cullBackFaces", coerceBoolean, true),
         cullOccluded: prop(obj, "cullOccluded", coerceBoolean, true),
+        cullOutsideFrame: prop(obj, "cullOutsideFrame", coerceBoolean, false),
         fillColor: prop(obj, "fillColor", v => coerceKeyframed(v, coerceColor), singleKeyframe([1, 1, 1])),
         strokeColor: prop(obj, "strokeColor", v => coerceKeyframed(v, coerceColor), singleKeyframe([0, 0, 0])),
         strokeWidth: prop(obj, "strokeWidth", v => coerceKeyframed(v, v2 => coerceNumber(v2, 0)), singleKeyframe(0)),
@@ -382,8 +385,7 @@ function coerceScene(value: unknown | undefined): Scene {
         lights: prop(obj, "lights", v => map(coerceArray(v), coerceKeyframedLight), [singleKeyframe({ kind: "ambient", color: [0.8, 0.8, 0.8] })]),
         polygons: prop(obj, "polygons", coerceKeyframedPolygons),
         name: prop(obj, "name", coerceName, "My 3D scene"),
-        size: prop(obj, "size", coerceSize),
-        extraRefreshes: prop(obj, "extraRefreshes", v => map(coerceArray(v), coerceTime), []),
+        size: prop(obj, "size", coerceSize)
     };
     return scene;
 }

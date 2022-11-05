@@ -1,5 +1,5 @@
 import { BVec } from "./bvec";
-import { addDim, combine, Dim, fill, map, remDim, Vec, Vec2, Vec3, Vec4 } from "./vec";
+import { addDim, combine, ConstVec, Dim, fill, map, remDim, Vec, Vec2, Vec3, Vec4 } from "./vec";
 
 export type RVec2 = Vec2<number>;
 export type RVec3 = Vec3<number>;
@@ -91,16 +91,12 @@ export function dist<TDim extends Dim>(a: ConstRVec<TDim>, b: ConstRVec<TDim>): 
     return Math.sqrt(sqrDist(a, b));
 }
 
-export function sqrDot<TDim extends Dim>(a: ConstRVec<TDim>, b: ConstRVec<TDim>): number {
+export function dot<TDim extends Dim>(a: ConstRVec<TDim>, b: ConstRVec<TDim>): number {
     let res = 0;
     for (let d = 0; d < a.length; d++) {
         res += a[d] * b[d];
     }
     return res;
-}
-
-export function dot<TDim extends Dim>(a: ConstRVec<TDim>, b: ConstRVec<TDim>): number {
-    return Math.sqrt(sqrDot(a, b));
 }
 
 export function cross(a: ConstRVec3, b: ConstRVec3): RVec3 {
@@ -142,3 +138,11 @@ export function homog(v: ConstRVec3): RVec4 {
 export function nonHomog(v: ConstRVec4): RVec3 {
     return div<3>(remDim<number, 4>(v), v[3]);
 }
+
+export function minc<TDim extends Dim>(v: ConstRVec<TDim>): number {
+    return Math.min(...v);
+}
+
+export function maxc<TDim extends Dim>(v: ConstRVec<TDim>): number {
+    return Math.max(...v);
+} 

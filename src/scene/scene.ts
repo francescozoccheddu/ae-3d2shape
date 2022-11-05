@@ -1,4 +1,4 @@
-import { RVec3 } from "../geometry/rvec";
+import { ConstRVec3 } from "../geometry/rvec";
 
 export type Keyframe<TValue> = {
     readonly time: number,
@@ -9,7 +9,10 @@ export type Keyframed<TValue> = Keyframe<TValue>[];
 
 export type Color = readonly [number, number, number];
 
-export type Polygon = readonly RVec3[];
+export type Polygon = {
+    readonly verts: readonly ConstRVec3[];
+    readonly normal: ConstRVec3;
+}
 
 export type Polygons = readonly Polygon[];
 
@@ -21,13 +24,13 @@ export type AmbientLight = {
 };
 
 export type DirectionalLight = {
-    readonly direction: RVec3,
+    readonly direction: ConstRVec3,
     readonly color: Color
     readonly kind: "directional";
 };
 
 export type PointLight = {
-    readonly point: RVec3,
+    readonly point: ConstRVec3,
     readonly radius: number,
     readonly color: Color
     readonly kind: "point";
@@ -50,9 +53,9 @@ export type PerspectiveCameraProjection = {
 export type CameraProjection = OrthographicCameraProjection | PerspectiveCameraProjection;
 
 export type CameraView = {
-    readonly up: RVec3,
-    readonly forward: RVec3,
-    readonly eye: RVec3
+    readonly up: ConstRVec3,
+    readonly forward: ConstRVec3,
+    readonly eye: ConstRVec3
 };
 
 export type Camera = {
@@ -77,8 +80,8 @@ export type Scene = {
     readonly name: string,
     readonly cullOccluded: boolean,
     readonly cullBackFaces: boolean,
-    readonly anchorPoint: Keyframed<RVec3>,
+    readonly cullOutsideFrame: boolean,
+    readonly anchorPoint: Keyframed<ConstRVec3>,
     readonly fit: FitMode,
-    readonly size: Size,
-    readonly extraRefreshes: number[]
+    readonly size: Size
 };
