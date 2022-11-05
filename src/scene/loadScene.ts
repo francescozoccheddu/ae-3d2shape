@@ -2,7 +2,7 @@ import parseColor from "parse-color";
 import doing from "../utils/doing";
 import { deg2rad, polygonNormal } from "../geometry/trig";
 import "../utils/polyfills";
-import { AmbientLight, Camera, CameraProjection, CameraView, Color, DirectionalLight, FitMode, Keyframe, Keyframed, Light, OrthographicCameraProjection, PerspectiveCameraProjection, PointLight, Polygon, Polygons, Scene, Size } from "./scene";
+import { AmbientLight, Camera, CameraProjection, CameraView, DirectionalLight, FitMode, Keyframe, Keyframed, Light, OrthographicCameraProjection, PerspectiveCameraProjection, PointLight, Polygon, Polygons, Scene, Size } from "./scene";
 import { RVec3, isAlmNull, norm } from "../geometry/rvec";
 import { all } from "../geometry/bvec";
 
@@ -137,10 +137,10 @@ function coerceEnum<TEnums extends string[]>(value: unknown, entries: TEnums): T
     return str as TEnums[number];
 }
 
-function coerceColor(value: unknown): Color {
+function coerceColor(value: unknown): RVec3 {
     if (isArray(value)) {
         const array = coerceArray(value, 3, 3);
-        return map(array, c => coerceNumber(c, 0, 1)) as Color;
+        return map(array, c => coerceNumber(c, 0, 1)) as RVec3;
     }
     else if (isString(value)) {
         const hex = coerceString(value, "^#?(([0-9a-fA-F]{1,2}){3})$");

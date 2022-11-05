@@ -3,13 +3,13 @@ import { ConstRVec2, ConstRVec3, dot, homog, min, minc, nonHomog } from "../geom
 import { remDim } from "../geometry/vec";
 import { Camera, Polygons } from "../scene/scene";
 
-export type Shape = {
+export type ProjectedPolygon = {
     readonly points: readonly ConstRVec2[],
     readonly depthIndex: number,
     readonly back: boolean
 };
 
-export default function renderShapes(camera: Camera, polygons: Polygons): readonly Shape[] {
+export default function projectPolygons(polygons: Polygons, camera: Camera): readonly ProjectedPolygon[] {
     const vMat: ConstRMat4 = viewMat(camera.view.eye, camera.view.forward, camera.view.up);
     const pMat: ConstRMat4 = camera.projection.kind === "orthographic"
         ? orthographicProjMat(camera.projection.scale)
@@ -36,7 +36,7 @@ export default function renderShapes(camera: Camera, polygons: Polygons): readon
         });
     }
     intermShapes.sort((a, b) => a.depth - b.depth);
-    const shapes: Shape[] = Array<Shape>(polygons.length);
+    const shapes: ProjectedPolygon[] = Array<ProjectedPolygon>(polygons.length);
     for (let i = 0; i < polygons.length; i++) {
         const intermShape = intermShapes[i];
         shapes[intermShape.polygonIndex] = {

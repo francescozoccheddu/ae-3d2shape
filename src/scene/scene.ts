@@ -7,8 +7,6 @@ export type Keyframe<TValue> = {
 
 export type Keyframed<TValue> = Keyframe<TValue>[];
 
-export type Color = readonly [number, number, number];
-
 export type Polygon = {
     readonly verts: readonly ConstRVec3[];
     readonly normal: ConstRVec3;
@@ -19,20 +17,20 @@ export type Polygons = readonly Polygon[];
 export type LightKind = "point" | "ambient" | "directional";
 
 export type AmbientLight = {
-    readonly color: Color,
+    readonly color: ConstRVec3,
     readonly kind: "ambient";
 };
 
 export type DirectionalLight = {
     readonly direction: ConstRVec3,
-    readonly color: Color
+    readonly color: ConstRVec3
     readonly kind: "directional";
 };
 
 export type PointLight = {
     readonly point: ConstRVec3,
     readonly radius: number,
-    readonly color: Color
+    readonly color: ConstRVec3
     readonly kind: "point";
 }
 
@@ -71,8 +69,8 @@ export type Size = {
 };
 
 export type Scene = {
-    readonly fillColor: Keyframed<Color>,
-    readonly strokeColor: Keyframed<Color>,
+    readonly fillColor: Keyframed<ConstRVec3>,
+    readonly strokeColor: Keyframed<ConstRVec3>,
     readonly strokeWidth: Keyframed<number>,
     readonly camera: Keyframed<Camera>,
     readonly lights: readonly Keyframed<Light>[],
