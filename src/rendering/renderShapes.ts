@@ -1,11 +1,12 @@
 import { ConstRMat4, mul, orthographicProjMat, perspectiveProjMat, viewMat } from "../geometry/rmat4";
-import { ConstRVec2, ConstRVec3, homog, min, minc, nonHomog } from "../geometry/rvec";
+import { ConstRVec2, ConstRVec3, dot, homog, min, minc, nonHomog } from "../geometry/rvec";
 import { remDim } from "../geometry/vec";
 import { Camera, Polygons } from "../scene/scene";
 
 export type Shape = {
     readonly points: readonly ConstRVec2[],
-    readonly depthIndex: number
+    readonly depthIndex: number,
+    readonly back: boolean
 };
 
 export default function renderShapes(camera: Camera, polygons: Polygons): readonly Shape[] {
@@ -17,7 +18,8 @@ export default function renderShapes(camera: Camera, polygons: Polygons): readon
     type IntermShape = {
         readonly points: readonly ConstRVec2[],
         readonly depth: number,
-        readonly polygonIndex: number
+        readonly polygonIndex: number,
+        readonly back: boolean
     };
     const intermShapes: IntermShape[] = Array<IntermShape>(polygons.length);
     let polygonIndex: number = 0;
@@ -29,7 +31,8 @@ export default function renderShapes(camera: Camera, polygons: Polygons): readon
         intermShapes.push({
             points: projVerts.map<ConstRVec2>(remDim<number, 3>),
             depth: Math.min(...projVerts.map(v => v[2])),
-            polygonIndex: polygonIndex++
+            polygonIndex: polygonIndex++,
+            back: dot(camera.view.forward, polygon.normal) >= 0
         });
     }
     intermShapes.sort((a, b) => a.depth - b.depth);
@@ -38,7 +41,8 @@ export default function renderShapes(camera: Camera, polygons: Polygons): readon
         const intermShape = intermShapes[i];
         shapes[intermShape.polygonIndex] = {
             points: intermShape.points,
-            depthIndex: i
+            depthIndex: i,
+            back: intermShape.back
         };
     }
     return shapes;
