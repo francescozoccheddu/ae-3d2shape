@@ -1,5 +1,5 @@
 import { BVec } from "./bvec";
-import { addDim, combine, ConstVec, Dim, fill, map, remDim, Vec, Vec2, Vec3, Vec4 } from "./vec";
+import { addDim, combine, Dim, fill, map, remDim, Vec, Vec2, Vec3, Vec4 } from "./vec";
 
 export type RVec2 = Vec2<number>;
 export type RVec3 = Vec3<number>;

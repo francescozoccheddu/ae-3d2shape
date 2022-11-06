@@ -1,14 +1,12 @@
 import doing from "./utils/doing";
-import loadScene from "./scene/loadScene";
-import { Scene } from "./scene/scene";
-import projectPolygons from "./rendering/projectPolygons";
+import loadProject from "./project/loadProject";
+import { Project } from "./project/project";
 
 function main(): void {
-    const scene: Scene | null = doing("loading scene file", loadScene);
-    if (scene === null) {
+    const project: Project | null = doing("loading project file", loadProject);
+    if (project === null) {
         return;
     }
-    const shapes = projectPolygons(scene.camera[0].value, scene.polygons[0].value);
     Window.alert("Reached the end of the script without any error!");
 }
 

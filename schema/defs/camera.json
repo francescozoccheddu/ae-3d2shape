@@ -11,8 +11,7 @@
                 {
                     "$ref": "definition-key.json"
                 }
-            ],
-            "default": "$defaultView"
+            ]
         },
         "projection": {
             "oneOf": [
@@ -27,8 +26,7 @@
         }
     },
     "required": [
-        "view",
-        "projection"
+        "view"
     ],
     "additionalProperties": false
 }
