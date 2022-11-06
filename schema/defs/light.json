@@ -1,0 +1,120 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schema/defs/light.json",
+    "$defs": {
+        "ambient": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "const": "ambient"
+                },
+                "color": {
+                    "oneOf": [
+                        {
+                            "$ref": "color.json"
+                        },
+                        {
+                            "$ref": "definition-key.json"
+                        }
+                    ],
+                    "default": "$defaultLightColor"
+                }
+            },
+            "required": [
+                "kind",
+                "color"
+            ],
+            "additionalProperties": false
+        },
+        "directional": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "const": "directional"
+                },
+                "direction": {
+                    "oneOf": [
+                        {
+                            "$ref": "vector.json"
+                        },
+                        {
+                            "$ref": "definition-key.json"
+                        }
+                    ]
+                },
+                "color": {
+                    "oneOf": [
+                        {
+                            "$ref": "color.json"
+                        },
+                        {
+                            "$ref": "definition-key.json"
+                        }
+                    ],
+                    "default": "$defaultLightColor"
+                }
+            },
+            "required": [
+                "kind",
+                "direction"
+            ],
+            "additionalProperties": false
+        },
+        "point": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "const": "point"
+                },
+                "point": {
+                    "oneOf": [
+                        {
+                            "$ref": "vector.json"
+                        },
+                        {
+                            "$ref": "definition-key.json"
+                        }
+                    ]
+                },
+                "radius": {
+                    "oneOf": [
+                        {
+                            "$ref": "radius.json"
+                        },
+                        {
+                            "$ref": "definition-key.json"
+                        }
+                    ]
+                },
+                "color": {
+                    "oneOf": [
+                        {
+                            "$ref": "color.json"
+                        },
+                        {
+                            "$ref": "definition-key.json"
+                        }
+                    ],
+                    "default": "$defaultLightColor"
+                }
+            },
+            "required": [
+                "kind",
+                "point",
+                "radius"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "oneOf": [
+        {
+            "$ref": "#/$defs/directional"
+        },
+        {
+            "$ref": "#/$defs/point"
+        },
+        {
+            "$ref": "#/$defs/ambient"
+        }
+    ]
+}

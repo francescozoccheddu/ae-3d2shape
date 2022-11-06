@@ -1,0 +1,302 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schema/defs/definitions.json",
+    "$defs": {
+        "camera": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "camera"
+                },
+                "value": {
+                    "$ref": "camera.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "color": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "color"
+                },
+                "value": {
+                    "$ref": "color.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "fov": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "fov"
+                },
+                "value": {
+                    "$ref": "fov.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "light": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "light"
+                },
+                "value": {
+                    "$ref": "light.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "lights": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "lights"
+                },
+                "value": {
+                    "$ref": "lights.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "polygon": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "polygon"
+                },
+                "value": {
+                    "$ref": "polygon.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "polygons": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "polygons"
+                },
+                "value": {
+                    "$ref": "polygons.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "projection": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "projection"
+                },
+                "value": {
+                    "$ref": "projection.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "radius": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "radius"
+                },
+                "value": {
+                    "$ref": "radius.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "scale": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "scale"
+                },
+                "value": {
+                    "$ref": "scale.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "scene": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "scene"
+                },
+                "value": {
+                    "$ref": "scene.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "thickness": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "thickness"
+                },
+                "value": {
+                    "$ref": "thickness.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "vector": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "vector"
+                },
+                "value": {
+                    "$ref": "vector.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "vertices": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "vertices"
+                },
+                "value": {
+                    "$ref": "vertices.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "view": {
+            "type": "object",
+            "properties": {
+                "type": {
+                    "const": "view"
+                },
+                "value": {
+                    "$ref": "view.json"
+                }
+            },
+            "required": [
+                "type",
+                "value"
+            ],
+            "additionalProperties": false
+        },
+        "value": {
+            "anyOf": [
+                {
+                    "$ref": "#/$defs/camera"
+                },
+                {
+                    "$ref": "#/$defs/color"
+                },
+                {
+                    "$ref": "#/$defs/fov"
+                },
+                {
+                    "$ref": "#/$defs/light"
+                },
+                {
+                    "$ref": "#/$defs/lights"
+                },
+                {
+                    "$ref": "#/$defs/polygon"
+                },
+                {
+                    "$ref": "#/$defs/polygons"
+                },
+                {
+                    "$ref": "#/$defs/projection"
+                },
+                {
+                    "$ref": "#/$defs/radius"
+                },
+                {
+                    "$ref": "#/$defs/scale"
+                },
+                {
+                    "$ref": "#/$defs/scene"
+                },
+                {
+                    "$ref": "#/$defs/thickness"
+                },
+                {
+                    "$ref": "#/$defs/vector"
+                },
+                {
+                    "$ref": "#/$defs/vertices"
+                },
+                {
+                    "$ref": "#/$defs/view"
+                }
+            ]
+        }
+    },
+    "type": "object",
+    "propertyNames": {
+        "$ref": "definition-key.json"
+    },
+    "additionalProperties": {
+        "$ref": "#/$defs/value"
+    }
+}

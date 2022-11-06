@@ -1,0 +1,89 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schema/project.json",
+    "type": "object",
+    "$defs": {
+        "frame-dimension": {
+            "type": "number",
+            "exclusiveMinimum": 0
+        }
+    },
+    "properties": {
+        "definitions": {
+            "$ref": "defs/definitions.json"
+        },
+        "keyframes": {
+            "type": "array",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "time": {
+                        "type": "number",
+                        "minimum": 0,
+                        "maximum": 86400
+                    },
+                    "scene": {
+                        "anyOf": [
+                            {
+                                "$ref": "defs/scene.json"
+                            },
+                            {
+                                "$ref": "defs/definition-key.json"
+                            }
+                        ]
+                    }
+                },
+                "required": [
+                    "time",
+                    "scene"
+                ],
+                "additionalProperties": false
+            },
+            "minItems": 1
+        },
+        "name": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 64,
+            "pattern": "^([ \\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}]*[\\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}][ \\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}]*)*$"
+        },
+        "fit": {
+            "enum": [
+                "width",
+                "height",
+                "min",
+                "max"
+            ],
+            "default": "min"
+        },
+        "frameSize": {
+            "type": "object",
+            "properties": {
+                "width": {
+                    "$ref": "#/$defs/frame-dimension"
+                },
+                "height": {
+                    "$ref": "#/$defs/frame-dimension"
+                }
+            },
+            "required": [
+                "width",
+                "height"
+            ],
+            "additionalProperties": false
+        },
+        "cullBack": {
+            "type": "boolean",
+            "default": true
+        },
+        "cullOutsideFrame": {
+            "type": "boolean",
+            "default": false
+        }
+    },
+    "required": [
+        "keyframes",
+        "frameSize"
+    ],
+    "additionalProperties": false
+}

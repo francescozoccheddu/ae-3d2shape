@@ -1,0 +1,43 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schema/defs/view.json",
+    "type": "object",
+    "properties": {
+        "up": {
+            "oneOf": [
+                {
+                    "$ref": "vector.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ]
+        },
+        "forward": {
+            "oneOf": [
+                {
+                    "$ref": "vector.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ]
+        },
+        "eye": {
+            "oneOf": [
+                {
+                    "$ref": "vector.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ]
+        }
+    },
+    "required": [
+        "up",
+        "forward",
+        "eye"
+    ],
+    "additionalProperties": false
+}

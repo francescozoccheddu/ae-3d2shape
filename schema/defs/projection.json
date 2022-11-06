@@ -1,0 +1,60 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schema/defs/projection.json",
+    "$defs": {
+        "orthographic-projection": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "const": "orthographic"
+                },
+                "scale": {
+                    "oneOf": [
+                        {
+                            "$ref": "scale.json"
+                        },
+                        {
+                            "$ref": "definition-key.json"
+                        }
+                    ],
+                    "default": "$defaultProjectionScale"
+                }
+            },
+            "required": [
+                "kind"
+            ],
+            "additionalProperties": false
+        },
+        "perspective-projection": {
+            "type": "object",
+            "properties": {
+                "kind": {
+                    "const": "perspective"
+                },
+                "fov": {
+                    "oneOf": [
+                        {
+                            "$ref": "fov.json"
+                        },
+                        {
+                            "$ref": "definition-key.json"
+                        }
+                    ],
+                    "default": "$defaultProjectionFov"
+                }
+            },
+            "required": [
+                "kind"
+            ],
+            "additionalProperties": false
+        }
+    },
+    "oneOf": [
+        {
+            "$ref": "#/$defs/orthographic-projection"
+        },
+        {
+            "$ref": "#/$defs/perspective-projection"
+        }
+    ]
+}

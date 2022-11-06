@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schema/defs/vertices.json",
+    "type": "array",
+    "items": {
+        "oneOf": [
+            {
+                "$ref": "vector.json"
+            },
+            {
+                "$ref": "definition-key.json"
+            }
+        ]
+    },
+    "minItems": 3
+}

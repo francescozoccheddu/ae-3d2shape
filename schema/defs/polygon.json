@@ -1,0 +1,32 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schema/defs/polygon.json",
+    "type": "object",
+    "properties": {
+        "vertices": {
+            "oneOf": [
+                {
+                    "$ref": "vertices.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ]
+        },
+        "color": {
+            "oneOf": [
+                {
+                    "$ref": "color.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ],
+            "default": "$defaultPolygonColor"
+        }
+    },
+    "required": [
+        "vertices"
+    ],
+    "additionalProperties": false
+}

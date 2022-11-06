@@ -1,0 +1,76 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema",
+    "$id": "https://github.com/francescozoccheddu/ae-3d2shape/schema/defs/scene.json",
+    "type": "object",
+    "properties": {
+        "strokeColor": {
+            "oneOf": [
+                {
+                    "$ref": "color.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ],
+            "default": "$defaultStrokeColor"
+        },
+        "strokeThickness": {
+            "oneOf": [
+                {
+                    "$ref": "thickness.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ],
+            "default": "$defaultStrokeThickness"
+        },
+        "polygons": {
+            "oneOf": [
+                {
+                    "$ref": "polygons.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ]
+        },
+        "lights": {
+            "oneOf": [
+                {
+                    "$ref": "lights.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ],
+            "default": "$defaultLights"
+        },
+        "camera": {
+            "oneOf": [
+                {
+                    "$ref": "camera.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ]
+        },
+        "anchorPoint": {
+            "oneOf": [
+                {
+                    "$ref": "vector.json"
+                },
+                {
+                    "$ref": "definition-key.json"
+                }
+            ],
+            "default": "$defaultAnchorPoint"
+        }
+    },
+    "required": [
+        "polygons",
+        "camera"
+    ],
+    "additionalProperties": false
+}
