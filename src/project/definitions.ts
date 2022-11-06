@@ -84,7 +84,7 @@ class SymbolicDefs implements Defs {
 
 }
 
-const refPattern = /^\$[a-zA-Z0-9\-_]+$/;
+const refPattern = new RegExp("^\$[a-zA-Z0-9\-_]+$");
 
 export function isRef(value: unknown): value is string {
     if (isString(value)) {
@@ -121,22 +121,28 @@ function coerceDefinitions(value: unknown, defs: Defs): DefDict {
 
 function replaceSymbolicDefinitions(dict: Readonly<DefDict>): Defs {
     const defs = new ConcreteDefs(dict);
-    const queue: object[] = [defs];
+    const queue: object[] = [dict];
     while (queue.length > 0) {
         const obj = queue.pop()! as any;
-        for (const key of Object.keys(obj)) {
-            const value = obj[key];
-            if (value instanceof SymbolicDef) {
-                obj[key] = defs.get(value.type, value.key);
-            }
-            else if (isObject(value)) {
-                for (const subKey of Object.keys(value)) {
-                    queue.push(obj[subKey]);
+        if (isObject(obj)) {
+            for (const key of Object.keys(obj)) {
+                const value = obj[key] as any;
+                if (value instanceof SymbolicDef) {
+                    (obj as any)[key] = defs.get(value.type, value.key);
+                }
+                else {
+                    queue.push(value);
                 }
             }
-            else if (isArray(value)) {
-                for (const subValue of value) {
-                    queue.push(subValue);
+        }
+        else if (isArray(obj)) {
+            for (let i = 0; i < obj.length; i++) {
+                const value = obj[i];
+                if (value instanceof SymbolicDef) {
+                    obj[i] = defs.get(value.type, value.key);
+                }
+                else {
+                    queue.push(value);
                 }
             }
         }
@@ -186,7 +192,7 @@ export function buildDefinitions(value: unknown): Defs {
                 type: "lights",
                 value: [{
                     kind: "ambient",
-                    color: [0.8, 0.8, 0.8]
+                    color: [1, 1, 1]
                 }]
             },
             "$defaultAnchorPoint": {

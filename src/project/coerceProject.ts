@@ -43,14 +43,14 @@ export function coerceVector(value: unknown, defs: Defs): Vector {
     }
     if (isArray(value)) {
         const array = coerceArray(value, 3, 3);
-        return map(array, coerceNumber) as RVec3;
+        return map(array, v => coerceNumber(v)) as RVec3;
     }
     else if (isObject(value)) {
         const obj = coerceObject(value, ["x", "y", "z"] as const);
         return [
-            prop(obj, "x", coerceNumber),
-            prop(obj, "y", coerceNumber),
-            prop(obj, "z", coerceNumber)
+            prop(obj, "x", v => coerceNumber(v)),
+            prop(obj, "y", v => coerceNumber(v)),
+            prop(obj, "z", v => coerceNumber(v))
         ];
     }
     else {
@@ -119,7 +119,7 @@ export function coerceLights(value: unknown, defs: Defs): Lights {
     if (isRef(value)) {
         return defs.get("lights", value);
     }
-    return coerceArray(value).map(v => coerceLight(v, defs));
+    return map(coerceArray(value), v => coerceLight(v, defs));
 }
 
 export function coerceView(value: unknown, defs: Defs): View {
@@ -195,7 +195,7 @@ export function coerceCamera(value: unknown, defs: Defs): Camera {
 }
 
 export function coerceName(value: unknown): string {
-    const regex = /^([ \\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}]*[\\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}][ \\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}]*)*$/;
+    const regex = new RegExp("^([ \\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}]*[\\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}][ \\\\A-Z-a-z0-9\\+\\-\\*/=_\\.,!\\?\"'\\$%&@#\\(\\)\\[\\]\\{\\}]*)*$");
     return coerceString(value, regex);
 }
 
@@ -206,8 +206,8 @@ export function coerceFrameDimension(value: unknown): FrameDimension {
 export function coerceFrameSize(value: unknown): FrameSize {
     const obj = coerceObject(value, ["width", "height"] as const);
     return {
-        width: prop(obj, "width", coerceFrameDimension),
-        height: prop(obj, "height", coerceFrameDimension)
+        width: prop(obj, "width", v => coerceFrameDimension(v)),
+        height: prop(obj, "height", v => coerceFrameDimension(v))
     };
 }
 
@@ -215,7 +215,7 @@ export function coerceVertices(value: unknown, defs: Defs): Vertices {
     if (isRef(value)) {
         return defs.get("vertices", value);
     }
-    return coerceArray(value, 3).map(v => coerceVector(v, defs));
+    return map(coerceArray(value, 3), v => coerceVector(v, defs));
 }
 
 export function coercePolygon(value: unknown, defs: Defs): Polygon {
@@ -264,13 +264,24 @@ export function coerceScene(value: unknown, defs: Defs): Scene {
 export function coerceKeyframe(value: unknown, defs: Defs): Keyframe {
     const obj = coerceObject(value, ["time", "scene"] as const);
     return {
-        time: prop(obj, "time", coerceTime),
+        time: prop(obj, "time", v => coerceTime(v)),
         scene: prop(obj, "scene", v => coerceScene(v, defs))
     };
 }
 
 export function coerceKeyframes(value: unknown, defs: Defs): Keyframes {
-    return coerceArray(value, 1).map(v => coerceKeyframe(v, defs));
+    const keyframes = map(coerceArray(value, 1), v => coerceKeyframe(v, defs));
+    map(keyframes, k => {
+        if (k.scene.polygons.length != keyframes[0].scene.polygons.length) {
+            throw new Error(`Polygon count mismatch. Expected ${keyframes[0].scene.polygons.length} polygons, got ${k.scene.polygons.length}.`);
+        }
+        map(k.scene.polygons, (p, i) => {
+            if (p.vertices.length != keyframes[0].scene.polygons[i].vertices.length) {
+                throw new Error(`Vertices count mismatch. Expected ${keyframes[0].scene.polygons[i].vertices.length} polygons, got ${p.vertices.length}.`);
+            }
+        });
+    });
+    return keyframes;
 }
 
 export function coerceFit(value: unknown): Fit {
@@ -280,11 +291,11 @@ export function coerceFit(value: unknown): Fit {
 export default function coerceProject(value: unknown, defs: Defs): Project {
     const obj = coerceObject(value, ["fit", "cullBack", "cullOutsideFrame", "name"] as const, ["frameSize", "keyframes"]);
     return {
-        fit: prop(obj, "fit", coerceFit, "min"),
-        name: prop(obj, "name", coerceName, "ae-3d2shape"),
-        cullBack: prop(obj, "cullBack", coerceBoolean, true),
-        cullOutsideFrame: prop(obj, "cullOutsideFrame", coerceBoolean, true),
-        frameSize: prop(obj, "frameSize", coerceFrameSize),
+        fit: prop(obj, "fit", v => coerceFit(v), "min"),
+        name: prop(obj, "name", v => coerceName(v), "ae-3d2shape"),
+        cullBack: prop(obj, "cullBack", v => coerceBoolean(v), true),
+        cullOutsideFrame: prop(obj, "cullOutsideFrame", v => coerceBoolean(v), true),
+        frameSize: prop(obj, "frameSize", v => coerceFrameSize(v)),
         keyframes: prop(obj, "keyframes", v => coerceKeyframes(v, defs))
     };
 }

@@ -31,8 +31,8 @@ export function prop<TObj extends object, T>(obj: TObj, key: keyof TObj, coerce:
     return doing(`parsing property "${key.toString()}"`, () => coerce(obj[key]));
 }
 
-export function map<TIn, TOut>(array: readonly TIn[], f: (v: TIn) => TOut): readonly TOut[] {
-    return array.map((v, i) => doing(`processing element with index "${i}"`, () => f(v)));
+export function map<TIn, TOut>(array: readonly TIn[], f: (v: TIn, i: number) => TOut): readonly TOut[] {
+    return array.map((v, i) => doing(`processing element with index "${i}"`, () => f(v, i)));
 }
 
 export function coerceBoolean(value: unknown): boolean {
