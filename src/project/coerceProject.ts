@@ -271,15 +271,21 @@ export function coerceKeyframe(value: unknown, defs: Defs): Keyframe {
 
 export function coerceKeyframes(value: unknown, defs: Defs): Keyframes {
     const keyframes = map(coerceArray(value, 1), v => coerceKeyframe(v, defs));
-    map(keyframes, k => {
-        if (k.scene.polygons.length != keyframes[0].scene.polygons.length) {
-            throw new Error(`Polygon count mismatch. Expected ${keyframes[0].scene.polygons.length} polygons, got ${k.scene.polygons.length}.`);
+    keyframes.sort((a, b) => a.time - b.time);
+    map(keyframes, (k, i) => {
+        if (i > 0 && k.time == keyframes[i - 1].time) {
+            throw new Error(`Two keyframes at the same time ${k.time}.`);
         }
-        map(k.scene.polygons, (p, i) => {
-            if (p.vertices.length != keyframes[0].scene.polygons[i].vertices.length) {
-                throw new Error(`Vertices count mismatch. Expected ${keyframes[0].scene.polygons[i].vertices.length} polygons, got ${p.vertices.length}.`);
-            }
-        });
+        if (k.scene.polygons.length != keyframes[0].scene.polygons.length) {
+            throw new Error(`Polygon count mismatch between keyframes. Expected ${keyframes[0].scene.polygons.length} polygons, got ${k.scene.polygons.length}.`);
+        }
+        doing("validating polygons", () =>
+            map(k.scene.polygons, (p, i) => {
+                if (p.vertices.length != keyframes[0].scene.polygons[i].vertices.length) {
+                    throw new Error(`Vertices count mismatch between keyframes. Expected ${keyframes[0].scene.polygons[i].vertices.length} vertices, got ${p.vertices.length}.`);
+                }
+            })
+        );
     });
     return keyframes;
 }
