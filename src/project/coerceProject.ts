@@ -205,10 +205,10 @@ export function coerceFrameDimension(value: unknown): FrameDimension {
 
 export function coerceFrameSize(value: unknown): FrameSize {
     const obj = coerceObject(value, ["width", "height"] as const);
-    return {
-        width: prop(obj, "width", v => coerceFrameDimension(v)),
-        height: prop(obj, "height", v => coerceFrameDimension(v))
-    };
+    return [
+        prop(obj, "width", v => coerceFrameDimension(v)),
+        prop(obj, "height", v => coerceFrameDimension(v))
+    ];
 }
 
 export function coerceVertices(value: unknown, defs: Defs): Vertices {
@@ -299,8 +299,6 @@ export default function coerceProject(value: unknown, defs: Defs): Project {
     return {
         fit: prop(obj, "fit", v => coerceFit(v), "min"),
         name: prop(obj, "name", v => coerceName(v), "ae-3d2shape"),
-        cullBack: prop(obj, "cullBack", v => coerceBoolean(v), true),
-        cullOutsideFrame: prop(obj, "cullOutsideFrame", v => coerceBoolean(v), true),
         frameSize: prop(obj, "frameSize", v => coerceFrameSize(v)),
         keyframes: prop(obj, "keyframes", v => coerceKeyframes(v, defs))
     };

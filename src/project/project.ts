@@ -1,4 +1,4 @@
-import { ConstRVec3 } from "../geometry/rvec";
+import { ConstRVec2, ConstRVec3 } from "../geometry/rvec";
 
 export type Color = ConstRVec3;
 
@@ -79,10 +79,7 @@ export type Camera = {
 
 export type Fit = "width" | "height" | "min" | "max";
 
-export type FrameSize = {
-    readonly width: FrameDimension;
-    readonly height: FrameDimension;
-};
+export type FrameSize = ConstRVec2;
 
 export type Scene = {
     readonly strokeColor: Color;
@@ -105,6 +102,4 @@ export type Project = {
     readonly keyframes: Keyframes;
     readonly frameSize: FrameSize;
     readonly fit: Fit;
-    readonly cullBack: boolean;
-    readonly cullOutsideFrame: boolean;
 };

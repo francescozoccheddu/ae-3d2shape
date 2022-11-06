@@ -18,21 +18,11 @@ export function bvec<TDim extends Dim>(dim: TDim, value: boolean = false): BVec<
 }
 
 export function any<TDim extends Dim>(v: ConstBVec<TDim>): boolean {
-    for (let d = 0; d < v.length; d++) {
-        if (v[d]) {
-            return true;
-        }
-    }
-    return false;
+    return v.some(v => v);
 }
 
 export function all<TDim extends Dim>(v: ConstBVec<TDim>): boolean {
-    for (let d = 0; d < v.length; d++) {
-        if (!v[d]) {
-            return false;
-        }
-    }
-    return true;
+    return v.every(v => v);
 }
 
 export function and<TDim extends Dim>(a: ConstBVec<TDim>, b: ConstBVec<TDim> | boolean): BVec<TDim> {

@@ -19,6 +19,12 @@ export function fill<T, TDim extends Dim>(v: Vec<T, TDim>, value: T): void {
     }
 }
 
+export function set<T, TDim extends Dim>(dst: Vec<T, TDim>, src: Vec<T, TDim>): void {
+    for (let d = 0; d < dst.length; d++) {
+        dst[d] = src[d];
+    }
+}
+
 export function vec<T, TDim extends Dim>(dim: TDim, value: T): Vec<T, TDim> {
     const v = new Array<T>(dim) as Vec<T, TDim>;
     fill(v, value);

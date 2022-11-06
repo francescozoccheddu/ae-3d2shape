@@ -71,14 +71,6 @@
                 "height"
             ],
             "additionalProperties": false
-        },
-        "cullBack": {
-            "type": "boolean",
-            "default": true
-        },
-        "cullOutsideFrame": {
-            "type": "boolean",
-            "default": false
         }
     },
     "required": [

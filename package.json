@@ -27,9 +27,11 @@
   "homepage": "https://github.com/francescozoccheddu/ae-3d2shape#readme",
   "dependencies": {
     "@babel/preset-env": "^7.19.4",
+    "@extendscript/aes.patch.array.every": "^2.0.0",
     "@extendscript/aes.patch.array.indexof": "^2.0.0",
     "@extendscript/aes.patch.array.isarray": "^2.0.0",
     "@extendscript/aes.patch.array.map": "^2.0.0",
+    "@extendscript/aes.patch.array.some": "^2.0.0",
     "@extendscript/aes.patch.json": "^2.0.0",
     "@extendscript/aes.patch.object.keys": "^2.0.0",
     "@types/babelify": "^7.3.7",

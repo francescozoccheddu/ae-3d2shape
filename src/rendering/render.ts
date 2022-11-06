@@ -1,16 +1,33 @@
-import { ConstRVec2, ConstRVec3 } from "../geometry/rvec";
+import { RVec2, RVec3 } from "../geometry/rvec";
 
-export type Shape = {
-    readonly vertices: readonly ConstRVec2[];
-    readonly fill: ConstRVec3;
-    readonly back: boolean;
+export type SceneShape = {
+    vertices: RVec2[];
+    fill: RVec3;
+    back: boolean;
 };
 
-export type Render = {
-    readonly strokeColor: ConstRVec3;
-    readonly strokeThickness: number;
-    readonly shapes: readonly Shape[];
-    readonly shapeIndicesByDepth: readonly number[];
+export type SceneRender = {
+    strokeColor: RVec3;
+    strokeThickness: number;
+    anchorPoint: RVec2;
+    shapes: SceneShape[];
+    shapeIndicesByDepth: number[];
 };
 
-export default Render;
+export type ProjectFrameShape = {
+    vertices: RVec2[];
+    fill: RVec3;
+};
+
+export type ProjectFrameRender = {
+    strokeColor: RVec3;
+    strokeThickness: number;
+    anchorPoint: RVec2;
+    shapes: ProjectFrameShape[];
+    time: number;
+};
+
+export type ProjectRender = {
+    frames: ProjectFrameRender[];
+    name: string;
+}

@@ -1,8 +1,8 @@
 import { ConstRMat4, mul as matMul, orthographicProjMat, perspectiveProjMat, viewMat } from "../geometry/rmat4";
-import { add, ConstRVec3, dist, div, dot, homog, min, mul as vecMul, nonHomog, rvec, RVec2, RVec3, sub } from "../geometry/rvec";
-import { remDim } from "../geometry/vec";
+import { add, dist, div, dot, homog, min, mul as vecMul, nonHomog, rvec, RVec2, RVec3, sub } from "../geometry/rvec";
+import { clone, remDim } from "../geometry/vec";
 import { Lights, Polygon, Scene, Vertices } from "../project/project";
-import { Render, Shape } from "./render";
+import { SceneRender, SceneShape } from "./render";
 
 function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
     let color: RVec3 = rvec(3);
@@ -45,14 +45,14 @@ function projectPolygon(polygon: Polygon, mat: ConstRMat4): { vertices: RVec2[],
     };
 }
 
-export default function renderScene(scene: Scene): Render {
+export default function renderScene(scene: Scene): SceneRender {
     const mat: ConstRMat4 = matMul(
         scene.camera.projection.kind === "perspective"
             ? perspectiveProjMat(scene.camera.projection.fovRad)
             : orthographicProjMat(scene.camera.projection.scale),
         viewMat(scene.camera.view.eye, scene.camera.view.forward, scene.camera.view.up)
     );
-    const shapes: Shape[] = [];
+    const shapes: SceneShape[] = [];
     const depthInfo: { readonly depth: number, readonly index: number }[] = [];
     let i = 0;
     for (const polygon of scene.polygons) {
@@ -69,8 +69,9 @@ export default function renderScene(scene: Scene): Render {
     }
     depthInfo.sort((a, b) => a.depth - b.depth);
     return {
-        strokeColor: scene.strokeColor,
+        strokeColor: clone<number, 3>(scene.strokeColor),
         strokeThickness: scene.strokeThickness,
+        anchorPoint: remDim<number, 3>(nonHomog(matMul(mat, homog(scene.anchorPoint)))),
         shapes,
         shapeIndicesByDepth: depthInfo.map(v => v.index)
     };

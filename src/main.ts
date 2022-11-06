@@ -2,13 +2,14 @@ import doing from "./utils/doing";
 import loadProject from "./project/loadProject";
 import { Project } from "./project/project";
 import renderScene from "./rendering/renderScene";
+import renderProject from "./rendering/renderProject";
 
 function main(): void {
     const project: Project | null = doing("loading project file", loadProject);
     if (project === null) {
         return;
     }
-    const render = renderScene(project.keyframes[0].scene);
+    const render = renderProject(project, [500, 500]);
     Window.alert("Reached the end of the script without any error!");
 }
 
