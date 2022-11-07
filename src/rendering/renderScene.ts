@@ -72,7 +72,7 @@ export default function renderScene(scene: Scene): SceneRender {
             index: i++
         });
     }
-    depthInfo.sort((a, b) => b.depth - a.depth);
+    depthInfo.sort((a, b) => a.depth - b.depth);
     return {
         strokeColor: clone<number, 3>(scene.strokeColor),
         strokeThickness: scene.strokeThickness,

@@ -71,6 +71,10 @@
                 "height"
             ],
             "additionalProperties": false
+        },
+        "cullBack": {
+            "type": "boolean",
+            "default": true
         }
     },
     "required": [

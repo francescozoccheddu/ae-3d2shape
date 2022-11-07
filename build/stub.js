@@ -1,29 +1,36 @@
 (function () {
     if (typeof Window === "undefined") {
-        var metaCol = require("cli-color").blue;
+        var metaCol = require("cli-color").blue.italic;
+        var valueCol = require("cli-color").cyanBright;
         function str(val) {
             if (typeof val === "object") {
                 return JSON.stringify(val);
             }
             return String(val);
-        }
+        };
         function log() {
             for (var i = 0; i < arguments.length; ++i) {
                 process.stdout.write(str(arguments[i]));
             }
-        }
+        };
+        function vlog() {
+            for (var i = 0; i < arguments.length; ++i) {
+                process.stdout.write(valueCol(str(arguments[i])));
+            }
+        };
         function mlog() {
             for (var i = 0; i < arguments.length; ++i) {
                 process.stdout.write(metaCol(str(arguments[i])));
             }
-        }
+        };
+        mlog("Installing stub interfaces\n");
         // Window
         global.Window = {
             alert: function (message, title, errorIcon) {
                 mlog("Alert window");
                 if (title) {
                     mlog(" with title '");
-                    log(title);
+                    vlog(title);
                     mlog("'");
                     if (errorIcon) {
                         mlog(" and error icon");
@@ -33,7 +40,7 @@
                     mlog(" with error icon");
                 }
                 mlog(" says:\n");
-                log(message);
+                vlog(message);
                 mlog("\n")
             }
         };
@@ -55,6 +62,71 @@
                 }
             }
         };
+        // Shape
+        function Shape() {
+            this.vertices = [];
+        }
+        global.Shape = Shape;
+        // Property
+        function Property(name, index) {
+            this._name = name;
+            this.propertyIndex = index;
+            this._childCount = 0;
+        };
+        Property.prototype.property = function (name) {
+            return new Property(this._name.concat(" -> ").concat(String(name)), name);
+        };
+        Property.prototype.addProperty = function (name) {
+            this._childCount++;
+            var child = new Property(this._name.concat(" -> ").concat(name.concat(" (").concat(String(this._childCount)).concat(")")), this._childCount);
+            mlog("Adding property '");
+            vlog(child._name);
+            mlog("'\n");
+            return child;
+        };
+        Property.prototype.setValue = function (value) {
+            mlog("Setting property '");
+            vlog(this._name);
+            mlog("' with value:\n");
+            vlog(value);
+            mlog("\n");
+        };
+        Property.prototype.setValueAtTime = function (time, value) {
+            mlog("Setting property '");
+            vlog(this._name);
+            mlog("' at time ")
+            vlog(time);
+            mlog(" with value:\n")
+            vlog(value);
+            mlog("\n");
+        };
+        // CompItem
+        function CompItem() {
+            this.width = 1280;
+            this.height = 720;
+            this.layers = {
+                addShape: function () {
+                    mlog("Adding a shape layer to the composition\n");
+                    return new Property("Shape layer", 0);
+                }
+            };
+        };
+        global.CompItem = CompItem;
+        // App
+        global.app = {
+            project: {
+                activeItem: new CompItem()
+            },
+            beginUndoGroup: function (name) {
+                mlog("Starting undo group with name '");
+                vlog(name);
+                mlog("'\n");
+            },
+            endUndoGroup: function () {
+                mlog("Ending undo group\n");
+            }
+        };
+        mlog("Setting a 1280x720 composition as the active project item\n");
         // Error
         function Error(description) {
             this.description = description;
@@ -63,7 +135,7 @@
         // File
         function File(path) {
             this.path = path;
-        }
+        };
         File.prototype.open = function (mode) {
             if (mode !== 'r') {
                 throw new Error("Only 'r' mode is supported.");
@@ -74,7 +146,9 @@
             return require("fs").readFileSync(this.path).toString();
         };
         File.openDialog = function () {
-            mlog("Open file dialog stub is returning 'test.json' file\n");
+            mlog("Open file dialog is returning the '");
+            vlog("test.json");
+            mlog("' file\n");
             return new File("test.json");
         };
         global.File = File;

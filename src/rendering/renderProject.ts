@@ -86,7 +86,9 @@ export default function renderProject(project: Project, targetSize: ConstRVec2):
     }));
     transform(keyframes, getTransform(project.frameSize, targetSize, project.fit));
     sort(keyframes, keyframes[0].shapeIndicesByDepth);
-    cullBack(keyframes);
+    if (project.cullBack) {
+        cullBack(keyframes);
+    }
     return {
         frames: keyframes,
         name: project.name

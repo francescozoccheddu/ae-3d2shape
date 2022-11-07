@@ -9,7 +9,11 @@ function main(): void {
     if (project === null) {
         return;
     }
-    const render = doing("rendering project", () => renderProject(project, [500, 500]));
+    const aeComposition = app.project.activeItem;
+    if (!(aeComposition instanceof CompItem)) {
+        throw new Error("No active composition.");
+    }
+    const render = doing("rendering project", () => renderProject(project, [aeComposition.width, aeComposition.height]));
     doing("applying render", () => apply(render));
     Window.alert("Reached the end of the script without any error!");
 }

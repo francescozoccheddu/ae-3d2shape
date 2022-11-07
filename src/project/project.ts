@@ -102,4 +102,5 @@ export type Project = {
     readonly keyframes: Keyframes;
     readonly frameSize: FrameSize;
     readonly fit: Fit;
+    readonly cullBack: boolean;
 };

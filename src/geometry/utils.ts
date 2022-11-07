@@ -1,4 +1,4 @@
-import { ConstRVec3, cross, dot, RVec3, sub } from "./rvec";
+import { ConstRVec3, cross, dot, norm, RVec3, sub } from "./rvec";
 
 export function deg2rad(deg: number): number {
     return deg / 180 * Math.PI;
@@ -17,7 +17,7 @@ export function isAlmNull(value: number, eps: number = 1e-6) {
 }
 
 export function triangleNormal(points: readonly [ConstRVec3, ConstRVec3, ConstRVec3]): RVec3 {
-    return cross(sub<3>(points[1], points[0]), sub<3>(points[2], points[0]));
+    return norm<3>(cross(sub<3>(points[1], points[0]), sub<3>(points[2], points[0])));
 }
 
 export function polygonNormal(points: readonly ConstRVec3[], eps: number = 1e-6): RVec3 {

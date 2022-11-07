@@ -5,7 +5,7 @@ import { deg2rad, polygonNormal } from "../geometry/utils";
 import doing from "../utils/doing";
 import "../utils/polyfills";
 import { Defs, isRef } from "./definitions";
-import { coerceArray, coerceEnum, coerceNumber, coerceObject, coerceString, isArray, isObject, isString, map, prop } from "./fundamentals";
+import { coerceArray, coerceBoolean, coerceEnum, coerceNumber, coerceObject, coerceString, isArray, isObject, isString, map, prop } from "./fundamentals";
 import { AmbientLight, Camera, Color, DirectionalLight, Fit, Fov, FrameDimension, FrameSize, Keyframe, Keyframes, Light, LightKind, Lights, OrthographicProjection, PerspectiveProjection, PointLight, Polygon, Polygons, Project, Projection, ProjectionKind, Radius, Scale, Scene, Thickness, Time, Vector, Vertices, View } from "./project";
 
 export function coerceColor(value: unknown, defs: Defs): Color {
@@ -304,11 +304,12 @@ export function coerceFit(value: unknown): Fit {
 }
 
 export default function coerceProject(value: unknown, defs: Defs): Project {
-    const obj = coerceObject(value, ["fit", "cullBack", "cullOutsideFrame", "name", "definitions"] as const, ["frameSize", "keyframes"]);
+    const obj = coerceObject(value, ["fit", "cullBack", "cullOutsideFrame", "name", "definitions", "cullBack"] as const, ["frameSize", "keyframes"]);
     return {
         fit: prop(obj, "fit", v => coerceFit(v), "min"),
         name: prop(obj, "name", v => coerceName(v), "ae-3d2shape"),
         frameSize: prop(obj, "frameSize", v => coerceFrameSize(v)),
-        keyframes: prop(obj, "keyframes", v => coerceKeyframes(v, defs))
+        keyframes: prop(obj, "keyframes", v => coerceKeyframes(v, defs)),
+        cullBack: prop(obj, "cullBack", v => coerceBoolean(v), true)
     };
 }
