@@ -68,10 +68,11 @@
         }
         global.Shape = Shape;
         // Property
-        function Property(name, index) {
+        function Property(name, index, leaf) {
             this._name = name;
             this.propertyIndex = index;
             this._childCount = 0;
+            this.anchorPoint = leaf ? null : new Property(this._name.concat(" -> Anchor Point"), "?", true);
         };
         Property.prototype.property = function (name) {
             return new Property(this._name.concat(" -> ").concat(String(name)), name);
