@@ -1,7 +1,6 @@
 import doing from "./utils/doing";
 import loadProject from "./project/loadProject";
 import { Project } from "./project/project";
-import renderScene from "./rendering/renderScene";
 import renderProject from "./rendering/renderProject";
 
 function main(): void {
