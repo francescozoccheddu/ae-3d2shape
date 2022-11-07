@@ -1,23 +1,36 @@
 import { ProjectRender } from "./rendering/render";
 
 export default function apply(render: ProjectRender): void {
-    const composition = app.project.activeItem;
-    if (!(composition instanceof CompItem)) {
+    const aeComposition = app.project.activeItem;
+    if (!(aeComposition instanceof CompItem)) {
         throw new Error("No active composition.");
     }
     if (render.frames.length == 0) {
         throw new Error("No keyframes.");
     }
     app.beginUndoGroup("ae-3d2shape");
-    composition.duration = Math.max(composition.duration, render.frames[render.frames.length - 1].time);
-    const layer = composition.layers.addShape();
-    layer.name = render.name;
-    const anchorPoint = (layer.property("ADBE Transform Group") as _TransformGroup).anchorPoint;
-    const rootGroup = layer.property("ADBE Root Vectors Group") as PropertyGroup;
-
-    for (const shape of render.frames[0].shapes) {
-        const group = rootGroup.addProperty("ADBE Vector Shape - Group") as PropertyGroup;
-        group.addProperty("ADBE Vector Graphic - Fill");
+    aeComposition.duration = Math.max(aeComposition.duration, render.frames[render.frames.length - 1].time);
+    // layer
+    const aeLayer = aeComposition.layers.addShape();
+    aeLayer.name = render.name;
+    const aeRootVectorGroup = aeLayer.property("ADBE Root Vectors Group") as PropertyGroup;
+    // groups
+    for (let s = 0; s < render.frames[0].shapes.length; s++) {
+        const aeVectorGroup = aeRootVectorGroup.addProperty("ADBE Vector Group").property("ADBE Vectors Group") as PropertyGroup;
+        const aePathGroupIndex = aeVectorGroup.addProperty("ADBE Vector Shape - Group").propertyIndex;
+        const aeFillGroupIndex = aeVectorGroup.addProperty("ADBE Vector Graphic - Fill").propertyIndex;
+        for (let k = 0; k < render.frames.length; k++) {
+            const frame = render.frames[k];
+            const shape = frame.shapes[s];
+            const aeShape = new Shape();
+            aeShape.vertices = shape.vertices;
+            (aeVectorGroup.property(aePathGroupIndex).property("ADBE Vector Shape") as Property).setValueAtTime(frame.time, aeShape);
+            (aeVectorGroup.property(aeFillGroupIndex).property("ADBE Vector Fill Color") as Property).setValueAtTime(frame.time, shape.fill);
+        }
     }
+    // stroke
+    const aeStrokeGroup = aeRootVectorGroup.addProperty("ADBE Vector Graphic - Stroke") as PropertyGroup;
+    // anchor point
+    const aeAnchorPoint = (aeLayer.property("ADBE Transform Group") as _TransformGroup).anchorPoint as TwoDProperty;
     app.endUndoGroup();
 }

@@ -4,7 +4,7 @@ import { ReturnType } from "../utils/polyfills";
 import { coerceCamera, coerceColor, coerceFov, coerceLight, coerceLights, coercePolygon, coercePolygons, coerceProjection, coerceRadius, coerceScale, coerceScene, coerceThickness, coerceVector, coerceVertices, coerceView } from "./coerceProject";
 import { coerceEnum, coerceObject, coerceString, isArray, isObject, isString, prop } from "./fundamentals";
 
-const coerceFuncs = {
+const coerceFuncsConst = {
     camera: coerceCamera,
     color: coerceColor,
     fov: coerceFov,
@@ -22,9 +22,9 @@ const coerceFuncs = {
     view: coerceView
 } as const;
 
-type DefType = keyof typeof coerceFuncs;
+type DefType = keyof typeof coerceFuncsConst;
 
-type DefValue<TType extends DefType> = ReturnType<typeof coerceFuncs[TType]>;
+type DefValue<TType extends DefType> = ReturnType<typeof coerceFuncsConst[TType]>;
 
 type DefOf<TType extends DefType> = {
     readonly type: TType;
@@ -84,7 +84,7 @@ class SymbolicDefs implements Defs {
 
 }
 
-const refPattern = new RegExp("^\$[a-zA-Z0-9\-_]+$");
+const refPattern = new RegExp("^\\$[a-zA-Z0-9\-_]+$");
 
 export function isRef(value: unknown): value is string {
     if (isString(value)) {
@@ -93,9 +93,9 @@ export function isRef(value: unknown): value is string {
     return false;
 }
 
-function coerceDefinition(value: unknown, defs: Defs): Def {
+function coerceDefinition(value: unknown, defs: Defs, coerceFuncs: typeof coerceFuncsConst): Def {
     const obj = coerceObject(value, ["value", "type"] as const);
-    const type = coerceEnum<DefType[]>(value, Object.keys(coerceFuncs));
+    const type = prop(obj, "type", v => coerceEnum<DefType[]>(v, Object.keys(coerceFuncsConst)));
     return {
         type,
         value: prop(obj, "value", v => {
@@ -107,13 +107,13 @@ function coerceDefinition(value: unknown, defs: Defs): Def {
     };
 }
 
-function coerceDefinitions(value: unknown, defs: Defs): DefDict {
+function coerceDefinitions(value: unknown, defs: Defs, coerceFuncs: typeof coerceFuncsConst): DefDict {
     const obj = coerceObject(value);
     const dict: DefDict = {};
     for (const key of Object.keys(obj)) {
         doing(`parsing definition "${key}"`, () => {
             coerceString(key, refPattern);
-            dict[key] = coerceDefinition(obj[key], defs);
+            dict[key] = coerceDefinition(obj[key], defs, coerceFuncs);
         });
     }
     return dict;
@@ -151,9 +151,26 @@ function replaceSymbolicDefinitions(dict: Readonly<DefDict>): Defs {
 }
 
 export function buildDefinitions(value: unknown): Defs {
+    const runtimeCoerceFuncs = {
+        camera: coerceCamera,
+        color: coerceColor,
+        fov: coerceFov,
+        light: coerceLight,
+        lights: coerceLights,
+        polygon: coercePolygon,
+        polygons: coercePolygons,
+        projection: coerceProjection,
+        radius: coerceRadius,
+        scale: coerceScale,
+        scene: coerceScene,
+        thickness: coerceThickness,
+        vector: coerceVector,
+        vertices: coerceVertices,
+        view: coerceView
+    } as const;
     let dict: DefDict = {}
     if (value !== undefined) {
-        dict = coerceDefinitions(value, new SymbolicDefs());
+        dict = coerceDefinitions(value, new SymbolicDefs(), runtimeCoerceFuncs);
     }
     dict = {
         ... {

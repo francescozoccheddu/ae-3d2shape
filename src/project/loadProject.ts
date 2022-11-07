@@ -30,6 +30,6 @@ export default function loadProject(): Project | null {
         return null;
     }
     const obj = coerceObject(json);
-    const defs = buildDefinitions((json as any).definitions);
-    return doing("parsing project", () => coerceProject(json, defs));
+    const defs = doing("parsing definitions", () => buildDefinitions((obj as any).definitions));
+    return doing("parsing project", () => coerceProject(obj, defs));
 }

@@ -1,6 +1,6 @@
 import { add, ConstRVec2, div, maxc, minc, mul, RVec2, sub } from "../geometry/rvec";
 import { set } from "../geometry/vec";
-import { Fit, FrameSize, Project, Scene } from "../project/project";
+import { Fit, FrameSize, Project } from "../project/project";
 import { ProjectRender, SceneRender, SceneShape } from "./render";
 import renderScene from "./renderScene";
 
@@ -84,9 +84,9 @@ export default function renderProject(project: Project, targetSize: ConstRVec2):
         ...renderScene(k.scene),
         time: k.time
     }));
-    cullBack(keyframes);
     transform(keyframes, getTransform(project.frameSize, targetSize, project.fit));
     sort(keyframes, keyframes[0].shapeIndicesByDepth);
+    cullBack(keyframes);
     return {
         frames: keyframes,
         name: project.name

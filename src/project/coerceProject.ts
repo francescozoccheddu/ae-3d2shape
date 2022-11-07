@@ -1,11 +1,11 @@
 import parseColor from "parse-color";
-import doing from "../utils/doing";
-import { deg2rad, polygonNormal } from "../geometry/utils";
-import "../utils/polyfills";
-import { RVec3, isAlmNull, norm } from "../geometry/rvec";
 import { all } from "../geometry/bvec";
-import { coerceArray, coerceBoolean, coerceEnum, coerceNumber, coerceObject, coerceString, isArray, isObject, isString, map, prop } from "./fundamentals";
+import { isAlmNull, norm, RVec3 } from "../geometry/rvec";
+import { deg2rad, polygonNormal } from "../geometry/utils";
+import doing from "../utils/doing";
+import "../utils/polyfills";
 import { Defs, isRef } from "./definitions";
+import { coerceArray, coerceEnum, coerceNumber, coerceObject, coerceString, isArray, isObject, isString, map, prop } from "./fundamentals";
 import { AmbientLight, Camera, Color, DirectionalLight, Fit, Fov, FrameDimension, FrameSize, Keyframe, Keyframes, Light, LightKind, Lights, OrthographicProjection, PerspectiveProjection, PointLight, Polygon, Polygons, Project, Projection, ProjectionKind, Radius, Scale, Scene, Thickness, Time, Vector, Vertices, View } from "./project";
 
 export function coerceColor(value: unknown, defs: Defs): Color {
@@ -67,7 +67,10 @@ export function coerceDirection(value: unknown, defs: Defs): Vector {
 }
 
 export function coerceAmbientLight(value: unknown, defs: Defs): AmbientLight {
-    const obj = coerceObject(value, ["color"] as const);
+    const obj = coerceObject(value, ["color"] as const, ["kind"] as const);
+    if (obj.kind !== "ambient") {
+        throw new Error(`Unexpected kind "${obj.kind}".`);
+    }
     return {
         kind: "ambient",
         color: prop(obj, "color", v => coerceColor(v, defs), defs.get("color", "$defaultLightColor"))
@@ -75,7 +78,10 @@ export function coerceAmbientLight(value: unknown, defs: Defs): AmbientLight {
 }
 
 export function coerceDirectionalLight(value: unknown, defs: Defs): DirectionalLight {
-    const obj = coerceObject(value, ["color"] as const, ["direction"] as const);
+    const obj = coerceObject(value, ["color"] as const, ["direction", "kind"] as const);
+    if (obj.kind !== "directional") {
+        throw new Error(`Unexpected kind "${obj.kind}".`);
+    }
     return {
         kind: "directional",
         color: prop(obj, "color", v => coerceColor(v, defs), defs.get("color", "$defaultLightColor")),
@@ -91,7 +97,10 @@ export function coerceRadius(value: unknown, defs: Defs): Radius {
 }
 
 export function coercePointLight(value: unknown, defs: Defs): PointLight {
-    const obj = coerceObject(value, ["color"] as const, ["point", "radius"] as const);
+    const obj = coerceObject(value, ["color"] as const, ["point", "radius", "kind"] as const);
+    if (obj.kind !== "point") {
+        throw new Error(`Unexpected kind "${obj.kind}".`);
+    }
     return {
         kind: "point",
         color: prop(obj, "color", v => coerceColor(v, defs), defs.get("color", "$defaultLightColor")),
@@ -295,7 +304,7 @@ export function coerceFit(value: unknown): Fit {
 }
 
 export default function coerceProject(value: unknown, defs: Defs): Project {
-    const obj = coerceObject(value, ["fit", "cullBack", "cullOutsideFrame", "name"] as const, ["frameSize", "keyframes"]);
+    const obj = coerceObject(value, ["fit", "cullBack", "cullOutsideFrame", "name", "definitions"] as const, ["frameSize", "keyframes"]);
     return {
         fit: prop(obj, "fit", v => coerceFit(v), "min"),
         name: prop(obj, "name", v => coerceName(v), "ae-3d2shape"),

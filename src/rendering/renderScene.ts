@@ -1,7 +1,7 @@
 import { ConstRMat4, mul as matMul, orthographicProjMat, perspectiveProjMat, viewMat } from "../geometry/rmat4";
 import { add, dist, div, dot, homog, min, mul as vecMul, nonHomog, rvec, RVec2, RVec3, sub } from "../geometry/rvec";
 import { clone, remDim } from "../geometry/vec";
-import { Lights, Polygon, Scene, Vertices } from "../project/project";
+import { Lights, Polygon, Scene } from "../project/project";
 import { SceneRender, SceneShape } from "./render";
 
 function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
@@ -39,9 +39,14 @@ function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
 
 function projectPolygon(polygon: Polygon, mat: ConstRMat4): { vertices: RVec2[], depth: number } {
     const projVerts = polygon.vertices.map(v => nonHomog(matMul(mat, homog(v))));
+    let depth = 0;
+    for (const projVert of projVerts) {
+        depth += projVert[2];
+    }
+    depth /= projVerts.length;
     return {
-        vertices: projVerts.map(remDim<number, 3>),
-        depth: Math.min(...projVerts.map(v => v[2]))
+        vertices: projVerts.map(v => vecMul<2>(remDim<number, 3>(v), [1, -1])),
+        depth
     };
 }
 
@@ -67,7 +72,7 @@ export default function renderScene(scene: Scene): SceneRender {
             index: i++
         });
     }
-    depthInfo.sort((a, b) => a.depth - b.depth);
+    depthInfo.sort((a, b) => b.depth - a.depth);
     return {
         strokeColor: clone<number, 3>(scene.strokeColor),
         strokeThickness: scene.strokeThickness,
