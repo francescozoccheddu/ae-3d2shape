@@ -102,7 +102,7 @@ export function dot<TDim extends Dim>(a: ConstRVec<TDim>, b: ConstRVec<TDim>): n
 export function cross(a: ConstRVec3, b: ConstRVec3): RVec3 {
     return [
         a[1] * b[2] - a[2] * b[1],
-        a[0] * b[2] - a[2] * b[0],
+        a[2] * b[0] - a[0] * b[2],
         a[0] * b[1] - a[1] * b[0]
     ];
 }
