@@ -15,7 +15,7 @@ function main(): void {
     }
     const render = doing("rendering project", () => renderProject(project, [aeComposition.width, aeComposition.height]));
     doing("applying render", () => apply(render));
-    Window.alert("Reached the end of the script without any error!");
+    Window.alert("Successfully imported!", "ae-3d2shape");
 }
 
 try {
@@ -23,7 +23,7 @@ try {
 }
 catch (e) {
     if ($.level === 0) {
-        Window.alert((e as Error).description, "Error while importing the scene", true);
+        Window.alert("Import failed:\n".concat((e as Error).description), "ae-3d2shape", true);
     }
     else {
         throw e;
