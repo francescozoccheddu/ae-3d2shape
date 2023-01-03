@@ -10,7 +10,7 @@ export default function apply(render: ProjectRender): void {
     const frame = render.frames[0];
     for (const shape of frame.shapes) {
         const aiPath = aiLayer.pathItems.add();
-        aiPath.setEntirePath(shape.vertices);
+        aiPath.setEntirePath(shape.vertices.map(v => [v[0], -v[1]]));
         aiPath.closed = true;
         {
             aiPath.stroked = frame.strokeThickness > 0;
