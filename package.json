@@ -12,7 +12,9 @@
     "shape"
   ],
   "scripts": {
-    "start": "ts-node --project build/tsconfig.json build/main.ts -o ae-3d2shape.jsx",
+    "start": "npm run build",
+    "build": "ts-node --project build/tsconfig.json build/main.ts -o ae-3d2shape.jsx",
+    "build-ai": "ts-node --project build/tsconfig.json build/main.ts -o ae-3d2shape-ai.jsx --illustrator",
     "test": "ts-node --project build/tsconfig.json build/main.ts -o ae-3d2shape-test.jsx -d && node ae-3d2shape-test.jsx"
   },
   "repository": {
@@ -51,7 +53,6 @@
     "ora": "^6.1.2",
     "parse-color": "^1.0.0",
     "project-version": "^2.0.0",
-    "tinyify": "^4.0.0",
     "ts-node": "^10.9.1",
     "tsify": "^5.0.4",
     "types-for-adobe": "^7.0.6",

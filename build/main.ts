@@ -23,7 +23,7 @@ export default async function main(): Promise<number> {
     const version = require('project-version');
     const args = await yargs(hideBin(process.argv))
         .strict()
-        .usage('$0 (build [-o <out_file>] [-d]')
+        .usage('$0 (build [-o <out_file>] [-d] [--illustrator]')
         .help('h').alias('h', 'help')
         .option('o', {
             type: 'string',
@@ -38,13 +38,18 @@ export default async function main(): Promise<number> {
             describe: 'Debug mode',
             default: false
         })
+        .option('--illustrator', {
+            type: 'boolean',
+            describe: 'Build for Illustrator',
+            default: false
+        })
         .strict()
         .parse();
 
     const spinner = (await import('ora')).default();
     spinner.start("Building source...");
     try {
-        await build(args.o, args.d);
+        await build(args.o, args.d, args["--illustrator"]);
         spinner.succeed(`Successfully built "${args.o}"`);
     }
     catch (e) {
