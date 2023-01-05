@@ -1,4 +1,4 @@
-import { ConstRVec3, cross, dot, norm, RVec3, sub } from "./rvec";
+import { add, ConstRVec3, cross, div, norm, rvec, RVec3, sub } from "./rvec";
 
 export function deg2rad(deg: number): number {
     return deg / 180 * Math.PI;
@@ -24,12 +24,12 @@ export function polygonNormal(points: readonly ConstRVec3[], eps: number = 1e-6)
     if (points.length < 3) {
         throw new Error("Not a polygon (less than 3 points).");
     }
-    const normal = triangleNormal(points.slice(0, 3) as [ConstRVec3, ConstRVec3, ConstRVec3]);
-    for (let i = 3; i < points.length; i++) {
-        const angle = dot(sub(points[i], points[0]), normal);
-        if (!isAlmNull(angle, eps)) {
-            throw new Error("Polygon is not planar.");
-        }
+    if (points.length == 3) {
+        return triangleNormal(points as [ConstRVec3, ConstRVec3, ConstRVec3]);
     }
-    return normal;
+    let normalSum = rvec(3, 0);
+    for (let i = 3; i < points.length + 3; i++) {
+        normalSum = add<3>(normalSum, triangleNormal([1, 2, 3].map(o => points[(i + o) % points.length]) as [ConstRVec3, ConstRVec3, ConstRVec3]));
+    }
+    return div<3>(normalSum, points.length);
 }
