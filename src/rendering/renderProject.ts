@@ -10,7 +10,7 @@ type Transform = {
 };
 
 function getScale(frameSize: FrameSize, targetSize: ConstRVec2, fit: Fit): number {
-    const scaleToFit = div<2>(targetSize, frameSize);
+    const scaleToFit = div<2>(targetSize, mul<2>(frameSize, 2));
     switch (fit) {
         case "width":
             return scaleToFit[0];

@@ -1,5 +1,5 @@
-import { cot } from "./utils";
 import { ConstRVec3, ConstRVec4, cross, dot, rvec, RVec4 } from "./rvec";
+import { cot } from "./utils";
 
 export type RMat4 = [RVec4, RVec4, RVec4, RVec4];
 export type ConstRMat4 = Readonly<RMat4>

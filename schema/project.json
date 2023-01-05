@@ -70,7 +70,11 @@
                 "width",
                 "height"
             ],
-            "additionalProperties": false
+            "additionalProperties": false,
+            "default": {
+                "width": 1,
+                "height": 1
+            }
         },
         "cullBack": {
             "type": "boolean",
@@ -78,8 +82,7 @@
         }
     },
     "required": [
-        "keyframes",
-        "frameSize"
+        "keyframes"
     ],
     "additionalProperties": false
 }

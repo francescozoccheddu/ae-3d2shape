@@ -304,11 +304,11 @@ export function coerceFit(value: unknown): Fit {
 }
 
 export default function coerceProject(value: unknown, defs: Defs): Project {
-    const obj = coerceObject(value, ["fit", "cullBack", "cullOutsideFrame", "name", "definitions", "cullBack"] as const, ["frameSize", "keyframes"]);
+    const obj = coerceObject(value, ["fit", "cullBack", "cullOutsideFrame", "name", "definitions", "cullBack", "frameSize"] as const, ["keyframes"]);
     return {
         fit: prop(obj, "fit", v => coerceFit(v), "min"),
         name: prop(obj, "name", v => coerceName(v), "ae-3d2shape"),
-        frameSize: prop(obj, "frameSize", v => coerceFrameSize(v)),
+        frameSize: prop(obj, "frameSize", v => coerceFrameSize(v), [1, 1]),
         keyframes: prop(obj, "keyframes", v => coerceKeyframes(v, defs)),
         cullBack: prop(obj, "cullBack", v => coerceBoolean(v), true)
     };
