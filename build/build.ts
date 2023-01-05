@@ -48,6 +48,6 @@ async function compileSourceAndStub(debug: boolean = true, stub: boolean = debug
 }
 
 export default async function build(outFile: string, debug: boolean = true, ai: boolean = false): Promise<void> {
-    const bundle = await compileSourceAndStub(debug, debug && !ai, ai);
+    const bundle = await compileSourceAndStub(debug, debug, ai);
     await fs.promises.writeFile(outFile, bundle);
 }

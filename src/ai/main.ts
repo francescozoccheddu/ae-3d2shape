@@ -5,6 +5,9 @@ import doing from "../utils/doing";
 import apply from "./apply";
 
 function main(): void {
+    if (BridgeTalk?.appName != "illustrator") {
+        throw new Error("Not on Adobe Illustrator.")
+    }
     if (app.documents.length == 0) {
         throw new Error("No active document.");
     }

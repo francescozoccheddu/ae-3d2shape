@@ -5,6 +5,9 @@ import renderProject from "./rendering/renderProject";
 import doing from "./utils/doing";
 
 function main(): void {
+    if (BridgeTalk?.appName != "aftereffects") {
+        throw new Error("Not on Adobe After Effects.")
+    }
     const aeComposition = app.project.activeItem;
     if (!(aeComposition instanceof CompItem)) {
         throw new Error("No active composition.");

@@ -62,6 +62,10 @@
                 }
             }
         };
+        // BridgeTalk
+        global.BridgeTalk = {
+            appName: "aftereffects"
+        };
         // Shape
         function Shape() {
             this.vertices = [];
