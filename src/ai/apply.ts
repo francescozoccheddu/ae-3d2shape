@@ -11,7 +11,7 @@ export default function apply(render: ProjectRender): void {
     for (const frame of render.frames) {
         const aiGroup = aiLayer.groupItems.add();
         aiGroup.name = "Frame " + fi++;
-        for (const shape of frame.shapes) {
+        for (const shape of frame.shapes.reverse()) {
             const aiPath = aiGroup.pathItems.add();
             aiPath.setEntirePath(shape.vertices.map(v => [v[0], -v[1]]));
             aiPath.closed = true;
@@ -35,5 +35,6 @@ export default function apply(render: ProjectRender): void {
             aiPath.strokeCap = StrokeCap.ROUNDENDCAP;
             aiPath.strokeJoin = StrokeJoin.ROUNDENDJOIN;
         }
+        aiGroup.translate(aiDoc.width / 2, -aiDoc.height / 2);
     }
 }
