@@ -87,7 +87,12 @@ export function rotationMat(axis: ConstRVec3, angleRad: number): RMat4 {
 
 export function perspectiveProjMat(fovRad: number): RMat4 {
     const scale = cot(fovRad / 2.0);
-    return orthographicProjMat(scale);
+    return [
+        [scale, 0, 0, 0],
+        [0, scale, 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 1, 0]
+    ];
 }
 
 export function orthographicProjMat(scale: number): RMat4 {

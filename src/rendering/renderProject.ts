@@ -1,13 +1,8 @@
-import { add, ConstRVec2, div, maxc, minc, mul, RVec2, sub } from "../geometry/rvec";
+import { ConstRVec2, div, maxc, minc, mul, RVec2 } from "../geometry/rvec";
 import { set } from "../geometry/vec";
 import { Fit, FrameSize, Project } from "../project/project";
 import { ProjectRender, SceneRender, SceneShape } from "./render";
 import renderScene from "./renderScene";
-
-type Transform = {
-    readonly scale: number;
-    readonly translation: ConstRVec2;
-};
 
 function getScale(frameSize: FrameSize, targetSize: ConstRVec2, fit: Fit): number {
     const scaleToFit = div<2>(targetSize, mul<2>(frameSize, 2));
@@ -23,24 +18,15 @@ function getScale(frameSize: FrameSize, targetSize: ConstRVec2, fit: Fit): numbe
     }
 }
 
-function getTransform(frameSize: FrameSize, targetSize: ConstRVec2, fit: Fit): Transform {
-    const scale = getScale(frameSize, targetSize, fit);
-    return {
-        scale,
-        translation: div<2>(sub<2>(targetSize, mul<2>(frameSize, scale)), 2)
-    };
+function transformPoint(point: RVec2, scale: number): void {
+    set(point, mul(point, scale));
 }
 
-function transformPoint(point: RVec2, transform: Transform): void {
-    set(point, add(mul(point, transform.scale), transform.translation));
-}
-
-function transform(keyframes: readonly SceneRender[], transform: Transform): void {
+function transform(keyframes: readonly SceneRender[], scale: number): void {
     for (const keyframe of keyframes) {
-        transformPoint(keyframe.anchorPoint, transform);
         for (const shape of keyframe.shapes) {
             for (const vert of shape.vertices) {
-                transformPoint(vert, transform);
+                transformPoint(vert, scale);
             }
         }
     }
@@ -84,7 +70,7 @@ export default function renderProject(project: Project, targetSize: ConstRVec2):
         ...renderScene(k.scene),
         time: k.time
     }));
-    transform(keyframes, getTransform(project.frameSize, targetSize, project.fit));
+    transform(keyframes, getScale(project.frameSize, targetSize, project.fit));
     sort(keyframes, keyframes[0].shapeIndicesByDepth);
     if (project.cullBack) {
         cullBack(keyframes);

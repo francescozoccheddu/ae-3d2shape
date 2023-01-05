@@ -211,10 +211,6 @@ export function buildDefinitions(value: unknown): Defs {
                     kind: "ambient",
                     color: [1, 1, 1]
                 }]
-            },
-            "$defaultAnchorPoint": {
-                type: "vector",
-                value: [0, 0, 0]
             }
         },
         ...dict

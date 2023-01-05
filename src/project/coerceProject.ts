@@ -261,7 +261,6 @@ export function coerceThickness(value: unknown, defs: Defs): Thickness {
 export function coerceScene(value: unknown, defs: Defs): Scene {
     const obj = coerceObject(value, ["strokeColor", "strokeThickness", "lights", "anchorPoint"] as const, ["camera", "polygons"] as const);
     return {
-        anchorPoint: prop(obj, "anchorPoint", v => coerceVector(v, defs), defs.get("vector", "$defaultAnchorPoint")),
         camera: prop(obj, "camera", v => coerceCamera(v, defs)),
         polygons: prop(obj, "polygons", v => coercePolygons(v, defs)),
         lights: prop(obj, "lights", v => coerceLights(v, defs), defs.get("lights", "$defaultLights")),

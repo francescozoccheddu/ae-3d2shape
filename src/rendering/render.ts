@@ -9,7 +9,6 @@ export type SceneShape = {
 export type SceneRender = {
     strokeColor: RVec3;
     strokeThickness: number;
-    anchorPoint: RVec2;
     shapes: SceneShape[];
     shapeIndicesByDepth: number[];
 };
@@ -22,7 +21,6 @@ export type ProjectFrameShape = {
 export type ProjectFrameRender = {
     strokeColor: RVec3;
     strokeThickness: number;
-    anchorPoint: RVec2;
     shapes: ProjectFrameShape[];
     time: number;
 };

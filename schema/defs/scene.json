@@ -55,17 +55,6 @@
                     "$ref": "definition-key.json"
                 }
             ]
-        },
-        "anchorPoint": {
-            "oneOf": [
-                {
-                    "$ref": "vector.json"
-                },
-                {
-                    "$ref": "definition-key.json"
-                }
-            ],
-            "default": "$defaultAnchorPoint"
         }
     },
     "required": [

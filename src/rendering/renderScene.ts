@@ -80,7 +80,6 @@ export default function renderScene(scene: Scene): SceneRender {
     return {
         strokeColor: clone<number, 3>(scene.strokeColor),
         strokeThickness: scene.strokeThickness,
-        anchorPoint: remDim<number, 3>(projectPoint(scene.anchorPoint, mat)),
         shapes,
         shapeIndicesByDepth: depthInfo.map(v => v.index)
     };

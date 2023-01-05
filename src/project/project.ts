@@ -87,7 +87,6 @@ export type Scene = {
     readonly camera: Camera;
     readonly lights: Lights;
     readonly polygons: Polygons;
-    readonly anchorPoint: Vector;
 };
 
 export type Keyframe = {

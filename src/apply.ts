@@ -36,10 +36,5 @@ export default function apply(render: ProjectRender): void {
             (aeVectorGroup.property(aeStrokeGroupIndex).property("ADBE Vector Stroke Width") as Property).setValueAtTime(frame.time, frame.strokeThickness);
         }
     }
-    // anchor point
-    const aeAnchorPoint = (aeLayer.property("ADBE Transform Group") as _TransformGroup).anchorPoint as TwoDProperty;
-    for (const frame of render.frames) {
-        aeAnchorPoint.setValueAtTime(frame.time, frame.anchorPoint);
-    }
     app.endUndoGroup();
 }
