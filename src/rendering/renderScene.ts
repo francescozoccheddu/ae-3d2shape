@@ -15,7 +15,7 @@ function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
                 }
             case "directional":
                 {
-                    const lambert = Math.max(-dot(light.direction, polygon.normal), 0);
+                    const lambert = Math.abs(-dot(light.direction, polygon.normal));
                     color = add<3>(color, vecMul<3>(light.color, lambert));
                     break;
                 }
@@ -27,7 +27,7 @@ function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
                     }
                     centroid = div<3>(centroid, polygon.vertices.length);
                     const direction = sub<3>(centroid, light.point);
-                    const lambert = Math.max(-dot(direction, polygon.normal), 0);
+                    const lambert = Math.abs(-dot(direction, polygon.normal));
                     const distanceFactor = Math.min(Math.max(dist(light.point, centroid) / light.radius, 0), 1);
                     color = add<3>(color, vecMul<3>(light.color, lambert * (1 - distanceFactor)));
                     break;
