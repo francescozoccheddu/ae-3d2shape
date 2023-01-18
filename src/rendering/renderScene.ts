@@ -1,11 +1,20 @@
 import { ConstRMat4, mul as matMul, orthographicProjMat, perspectiveProjMat, viewMat } from "../geometry/rmat4";
 import { add, ConstRVec3, dist, div, dot, homog, min, mul as vecMul, nonHomog, rvec, RVec2, RVec3, sub } from "../geometry/rvec";
-import { clone, remDim } from "../geometry/vec";
+import { clone, remDim, set, vec } from "../geometry/vec";
 import { Lights, Polygon, Scene } from "../project/project";
 import { SceneRender, SceneShape } from "./render";
 
+function normal(polygon: Polygon) {
+    const sum: RVec3 = vec(3, 0);
+    for (const n of polygon.normals) {
+        set(sum, add(sum, n));
+    }
+    return div(sum, polygon.normals.length);
+}
+
 function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
     let color: RVec3 = rvec(3);
+
     for (const light of lights) {
         switch (light.kind) {
             case "ambient":
@@ -15,7 +24,7 @@ function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
                 }
             case "directional":
                 {
-                    const lambert = Math.abs(-dot(light.direction, polygon.normal));
+                    const lambert = Math.abs(-dot(light.direction, normal(polygon)));
                     color = add<3>(color, vecMul<3>(light.color, lambert));
                     break;
                 }
@@ -27,7 +36,7 @@ function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
                     }
                     centroid = div<3>(centroid, polygon.vertices.length);
                     const direction = sub<3>(centroid, light.point);
-                    const lambert = Math.abs(-dot(direction, polygon.normal));
+                    const lambert = Math.abs(-dot(direction, normal(polygon)));
                     const distanceFactor = Math.min(Math.max(dist(light.point, centroid) / light.radius, 0), 1);
                     color = add<3>(color, vecMul<3>(light.color, lambert * (1 - distanceFactor)));
                     break;
@@ -43,14 +52,14 @@ function projectPoint(point: ConstRVec3, mat: ConstRMat4): RVec3 {
 
 function projectPolygon(polygon: Polygon, mat: ConstRMat4): { vertices: RVec2[], depth: number } {
     const projVerts = polygon.vertices.map(v => projectPoint(v, mat));
-    let depth = 0;
-    for (const projVert of projVerts) {
-        depth += projVert[2];
+    let centroid = rvec(3, 0);
+    for (const vert of polygon.vertices) {
+        centroid = add<3>(vert, centroid);
     }
-    depth /= projVerts.length;
+    centroid = div<3>(centroid, polygon.vertices.length);
     return {
         vertices: projVerts.map(remDim<number, 3>),
-        depth
+        depth: projectPoint(centroid, mat)[2]
     };
 }
 
@@ -69,7 +78,7 @@ export default function renderScene(scene: Scene): SceneRender {
         shapes.push({
             vertices,
             fill: shadePolygon(polygon, scene.lights),
-            back: dot(scene.camera.view.forward, polygon.normal) >= 0
+            back: polygon.normals.every(n => dot(scene.camera.view.forward, n) >= 0)
         });
         depthInfo.push({
             depth,

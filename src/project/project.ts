@@ -1,4 +1,4 @@
-import { ConstRVec2, ConstRVec3 } from "../geometry/rvec";
+import { ConstRVec2, ConstRVec3, RVec3 } from "../geometry/rvec";
 
 export type Color = ConstRVec3;
 
@@ -22,7 +22,7 @@ export type Name = string;
 
 export type Polygon = {
     readonly vertices: Vertices;
-    readonly normal: Vector;
+    readonly normals: readonly RVec3[];
     readonly color: Color;
 }
 

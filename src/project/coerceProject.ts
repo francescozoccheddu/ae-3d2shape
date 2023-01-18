@@ -1,7 +1,7 @@
 import parseColor from "parse-color";
 import { all } from "../geometry/bvec";
 import { isAlmNull, norm, RVec3 } from "../geometry/rvec";
-import { deg2rad, polygonNormal } from "../geometry/utils";
+import { deg2rad, polygonNormals } from "../geometry/utils";
 import doing from "../utils/doing";
 import "../utils/polyfills";
 import { Defs, isRef } from "./definitions";
@@ -235,7 +235,7 @@ export function coercePolygon(value: unknown, defs: Defs): Polygon {
     const vertices = prop(obj, "vertices", v => coerceVertices(v, defs));
     return {
         vertices: vertices,
-        normal: polygonNormal(vertices),
+        normals: polygonNormals(vertices),
         color: prop(obj, "color", v => coerceColor(v, defs), defs.get("color", "$defaultPolygonColor"))
     };
 }
