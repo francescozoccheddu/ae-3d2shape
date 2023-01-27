@@ -1,6 +1,7 @@
+import { any } from "../geometry/bvec";
 import { ConstRMat4, mul as matMul, orthographicProjMat, perspectiveProjMat, viewMat } from "../geometry/rmat4";
 import { add, ConstRVec3, dist, div, dot, homog, min, mul as vecMul, nonHomog, rvec, RVec2, RVec3, sub } from "../geometry/rvec";
-import { clone, remDim, set, vec } from "../geometry/vec";
+import { clone, map, remDim, set, vec } from "../geometry/vec";
 import { Lights, Polygon, Scene } from "../project/project";
 import { SceneRender, SceneShape } from "./render";
 
@@ -14,7 +15,6 @@ function normal(polygon: Polygon) {
 
 function shadePolygon(polygon: Polygon, lights: Lights): RVec3 {
     let color: RVec3 = rvec(3);
-
     for (const light of lights) {
         switch (light.kind) {
             case "ambient":
@@ -75,6 +75,10 @@ export default function renderScene(scene: Scene): SceneRender {
     let i = 0;
     for (const polygon of scene.polygons) {
         const { vertices, depth } = projectPolygon(polygon, mat);
+        const fill = shadePolygon(polygon, scene.lights);
+        if (any(map(fill, isNaN))) {
+            continue;
+        }
         shapes.push({
             vertices,
             fill: shadePolygon(polygon, scene.lights),
